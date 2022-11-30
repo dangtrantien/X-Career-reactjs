@@ -36,34 +36,6 @@ const BForm = (props) => {
     onClose(!open);
   };
 
-  useEffect(() => {
-    workSpaceAPI.getAll().then((result) => {
-      const ws = [];
-
-      result.data.data.map((res) => {
-        if (res.userID._id === userId) {
-          ws.push(res);
-        }
-      });
-
-      setWorkSpace(ws);
-    });
-  }, [userId]);
-
-  useEffect(() => {
-    if (dialogForm === 0) {
-      setBoard({
-        _id: '',
-        name: '',
-        workSpaceID: '',
-        bgImg: '',
-      });
-    } else if (dialogForm === 1) {
-      setBoard(formData);
-      setWSId(wsId);
-    }
-  }, [dialogForm, formData, wsId]);
-
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -92,56 +64,27 @@ const BForm = (props) => {
       });
     } else {
       if (data.get('_id') === '') {
-        boardAPI
-          .createNew(board)
-          .then((res) => {
-            if (res.status === 200) {
-              //   socket.board(board);
-
-              swal({
-                text: 'Successfully create new playlist.',
-                buttons: false,
-                timer: 2000,
-                icon: 'success',
-              });
-
-              setTimeout(() => {
-                // navigate(`/board/${res.data._id}`, { replace: true })
-              }, 3000);
-            }
-          })
-          .catch(() => {
-            swal({
-              text: 'Sorry, something went wrong. Please contact to admin for support.',
-              buttons: false,
-              timer: 5000,
-              icon: 'error',
-            });
+        if (board.workSpaceID === undefined) {
+          swal({
+            text: 'Please choose working space for board.',
+            buttons: false,
+            timer: 3000,
+            icon: 'warning',
           });
-      } else {
-        //Convert file to base64 string
-        const base64 = await EndcodeFileBase64(data.get('bgImg'));
-
-        //Kiểm tra có đúng là image hay không
-        if (base64.match(/[^:/]\w+\//)[0] === 'image/') {
-          board.bgImg = base64;
-
+        } else {
           boardAPI
-            .updateById(data.get('_id'), board)
+            .createNew(board)
             .then((res) => {
-              if (res.data.success === true) {
-                //   socket.board(board);
-
-                //Thông báo thành công
+              if (res.status === 200) {
                 swal({
-                  text: 'Successfully update board.',
+                  text: 'Successfully create new playlist.',
                   buttons: false,
-                  timer: 2000,
+                  timer: 3000,
                   icon: 'success',
                 });
 
                 setTimeout(() => {
-                  // navigate(`/board/${res.data._id}`, { replace: true })
+                  navigate(`/b/${res.data._id}`, { replace: true });
                 }, 3000);
               }
             })
@@ -153,17 +96,111 @@ const BForm = (props) => {
                 icon: 'error',
               });
             });
+        }
+      } else {
+        if (data.get('bgImg').name !== '') {
+          //Convert file to base64 string
+          const base64 = await EndcodeFileBase64(data.get('bgImg'));
+
+          //Kiểm tra có đúng là image hay không
+          if (base64.match(/[^:/]\w+\//)[0] === 'image/') {
+            board.bgImg = base64;
+
+            boardAPI
+              .updateById(data.get('_id'), board)
+              .then((res) => {
+                if (res.data.success === true) {
+                  socket.board(res.data.data);
+
+                  //Thông báo thành công
+                  swal({
+                    text: 'Successfully update board.',
+                    buttons: false,
+                    timer: 2000,
+                    icon: 'success',
+                  });
+
+                  setTimeout(() => {
+                    onClose(!open);
+                  }, 2000);
+                }
+              })
+              .catch(() => {
+                swal({
+                  text: 'Sorry, something went wrong. Please contact to admin for support.',
+                  buttons: false,
+                  timer: 5000,
+                  icon: 'error',
+                });
+              });
+          } else {
+            swal({
+              text: "Wrong file's type, please choose only image.",
+              buttons: false,
+              timer: 3000,
+              icon: 'warning',
+            });
+          }
         } else {
-          swal({
-            text: "Wrong file's type, please choose only image.",
-            buttons: false,
-            timer: 3000,
-            icon: 'warning',
-          });
+          boardAPI
+            .updateById(data.get('_id'), board)
+            .then((res) => {
+              if (res.data.success === true) {
+                socket.board(res.data.data);
+
+                //Thông báo thành công
+                swal({
+                  text: 'Successfully update board.',
+                  buttons: false,
+                  timer: 2000,
+                  icon: 'success',
+                });
+
+                setTimeout(() => {
+                  onClose(!open);
+                }, 2000);
+              }
+            })
+            .catch(() => {
+              swal({
+                text: 'Sorry, something went wrong. Please contact to admin for support.',
+                buttons: false,
+                timer: 5000,
+                icon: 'error',
+              });
+            });
         }
       }
     }
   };
+
+  useEffect(() => {
+    workSpaceAPI.getAll().then((result) => {
+      const ws = [];
+
+      result.data.data.map((res) => {
+        if (res.userID._id === userId) {
+          ws.push(res);
+        }
+      });
+
+      setWorkSpace(ws);
+    });
+  }, [userId]);
+
+  useEffect(() => {
+    if (dialogForm === 0) {
+      setBoard({
+        _id: '',
+        name: '',
+        workSpaceID: '',
+        bgImg: '',
+      });
+    } else if (dialogForm === 1) {
+      setBoard(formData);
+      setWSId(wsId);
+    }
+  }, [dialogForm, formData, wsId]);
 
   return (
     <>
@@ -198,6 +235,7 @@ const BForm = (props) => {
                 </Typography>
 
                 <Select native id="workSpaceID" value={WSId} onChange={handleWSChange} inputProps={{ 'aria-label': 'Working space' }}>
+                  <option label="Choose working space" value="Choose working space" />
                   {workSpace.map((data) => (
                     <option key={data._id} value={data._id}>
                       {data.name}
@@ -208,7 +246,7 @@ const BForm = (props) => {
             </DialogForm>
 
             <DialogForm value={dialogForm} index={1}>
-              <Grid>
+              <Grid sx={{ display: 'none' }}>
                 <Typography variant="h4">Id:</Typography>
 
                 <OutlinedInput id="_id" name="_id" value={board._id} onChange={handleChange} variant="standard" />
@@ -236,20 +274,6 @@ const BForm = (props) => {
                   placeholder="Enter table title"
                 />
               </Grid>
-
-              <Grid container alignItems="center" sx={{ height: 70 }}>
-                <Typography sx={{ mr: 2 }} color="primary" variant="h5">
-                  Working space:
-                </Typography>
-
-                <Select native id="workSpaceID" value={WSId} onChange={handleWSChange} inputProps={{ 'aria-label': 'Working space' }}>
-                  {workSpace.map((data) => (
-                    <option key={data._id} value={data._id}>
-                      {data.name}
-                    </option>
-                  ))}
-                </Select>
-              </Grid>
             </DialogForm>
 
             <Grid container alignItems="center" justifyContent="space-around" sx={{ mt: 4 }}>
@@ -275,7 +299,7 @@ const BForm = (props) => {
 BForm.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  formData: PropTypes.any.isRequired,
+  formData: PropTypes.object,
   wsId: PropTypes.any,
   dialogForm: PropTypes.number,
 };

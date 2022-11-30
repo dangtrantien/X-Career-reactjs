@@ -6,7 +6,7 @@ import Loadable from 'ui-component/Loadable';
 import { RequireAuth } from 'utils/requireAuth';
 
 // board routing
-const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
+const Board = Loadable(lazy(() => import('views/board/Detail')));
 
 // ==============================|| BOARD ROUTING ||============================== //
 
@@ -14,13 +14,18 @@ const BoardRoutes = {
   path: '/',
   element: (
     <RequireAuth>
-      <MainLayout />
+      <MainLayout page="board" />
     </RequireAuth>
   ),
   children: [
     {
-      path: 'board',
-      element: <DashboardDefault />,
+      path: 'b',
+      children: [
+        {
+          path: ':boardId',
+          element: <Board />,
+        },
+      ],
     },
   ],
 };

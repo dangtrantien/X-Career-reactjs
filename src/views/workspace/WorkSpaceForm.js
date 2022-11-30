@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 // material-ui
-import { Button, OutlinedInput, Typography, Grid, Dialog, Box, DialogContent } from '@mui/material';
+import { Button, OutlinedInput, Typography, Grid, Dialog, Box, DialogContent, Autocomplete, TextField, Chip } from '@mui/material';
 
 // icons
 
@@ -9,6 +10,7 @@ import { Button, OutlinedInput, Typography, Grid, Dialog, Box, DialogContent } f
 import swal from 'sweetalert';
 import PropTypes from 'prop-types';
 import WorkSpaceAPI from 'services/WorkSpaceAPI';
+import UserAPI from 'services/UserAPI';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import InputFileButton from 'ui-component/extended/InputFileButton';
 import SocketIo from 'utils/socket.io';
@@ -17,33 +19,29 @@ import EndcodeFileBase64 from 'utils/endcodeFileBase64';
 
 // ==============================|| WORKSPACE FORM ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
+const userAPI = new UserAPI();
 const socket = new SocketIo();
 
 const WSForm = (props) => {
   const { open, onClose, formData, dialogForm } = props;
+  const navigate = useNavigate();
+  const userID = sessionStorage.getItem('id');
 
   const [workspace, setWorkSpace] = useState({});
+
+  const [users, setUsers] = useState([]);
+  const [user, setUser] = useState({});
+  const [member, setMember] = useState([]);
 
   const handleClose = () => {
     onClose(!open);
   };
 
-  useEffect(() => {
-    if (dialogForm === 0) {
-      setWorkSpace({
-        _id: '',
-        name: '',
-        logo: '',
-      });
-    } else if (dialogForm === 1) {
-      setWorkSpace(formData);
-    }
-  }, [dialogForm, formData]);
-
-  const handleChange = (event) => {
+  const handleChange = (event, value) => {
     const name = event.target.name;
-    const value = event.target.value;
-    setWorkSpace({ ...workspace, [name]: value });
+    const data = event.target.value;
+    setWorkSpace({ ...workspace, [name]: data });
+    setMember(value);
   };
 
   const handleSubmit = async (e) => {
@@ -51,6 +49,7 @@ const WSForm = (props) => {
     const data = new FormData(e.currentTarget);
     const workSpace = {
       name: data.get('name'),
+      userIDs: member,
     };
 
     //Kiểm tra có tên workspace hay không
@@ -67,16 +66,15 @@ const WSForm = (props) => {
           .createNew(workSpace)
           .then((res) => {
             if (res.status === 200) {
-              //   socket.workspace(workSpace);
-
               swal({
                 text: 'Successfully create new work space.',
                 buttons: false,
-                timer: 2000,
+                timer: 3000,
                 icon: 'success',
               });
+
               setTimeout(() => {
-                onClose(!open);
+                navigate(`/w/detail/${res.data._id}`, { replace: true });
               }, 3000);
             }
           })
@@ -101,7 +99,7 @@ const WSForm = (props) => {
               .updateById(data.get('_id'), workSpace)
               .then((res) => {
                 if (res.data.success === true) {
-                  //   socket.workspace(workSpace);
+                  socket.workspace(res.data.data);
 
                   swal({
                     text: 'Successfully update work space.',
@@ -109,9 +107,10 @@ const WSForm = (props) => {
                     timer: 2000,
                     icon: 'success',
                   });
+
                   setTimeout(() => {
                     onClose(!open);
-                  }, 3000);
+                  }, 2000);
                 }
               })
               .catch(() => {
@@ -135,7 +134,7 @@ const WSForm = (props) => {
             .updateById(data.get('_id'), workSpace)
             .then((res) => {
               if (res.data.success === true) {
-                //   socket.workspace(workSpace);
+                socket.workspace(res.data.data);
 
                 swal({
                   text: 'Successfully update work space.',
@@ -143,9 +142,10 @@ const WSForm = (props) => {
                   timer: 2000,
                   icon: 'success',
                 });
+
                 setTimeout(() => {
                   onClose(!open);
-                }, 3000);
+                }, 2000);
               }
             })
             .catch(() => {
@@ -160,6 +160,30 @@ const WSForm = (props) => {
       }
     }
   };
+
+  useEffect(() => {
+    userAPI.getAll({ skip: 0, limit: 1000, orderBy: 'name' }).then((res) => {
+      setUsers(res.data.data);
+
+      res.data.data.map((value) => {
+        if (value._id === userID) {
+          setUser(value);
+        }
+      });
+    });
+
+    if (dialogForm === 0) {
+      setWorkSpace({
+        _id: '',
+        name: '',
+        logo: '',
+      });
+      setMember([]);
+    } else if (dialogForm === 1) {
+      setWorkSpace(formData);
+      setMember(formData.userIDs);
+    }
+  }, [dialogForm, formData, userID]);
 
   return (
     <>
@@ -218,6 +242,29 @@ const WSForm = (props) => {
                   placeholder="Enter work space name"
                 />
               </Grid>
+
+              <Grid>
+                <Typography sx={{ mr: 2 }} color="primary" variant="h5">
+                  Add member to workspace:
+                </Typography>
+
+                <Autocomplete
+                  sx={{ mt: 2 }}
+                  multiple
+                  filterSelectedOptions
+                  limitTags={2}
+                  id="userIDs"
+                  value={member}
+                  onChange={handleChange}
+                  options={users}
+                  getOptionLabel={(option) => option.name}
+                  getOptionDisabled={(option) => option === user}
+                  renderTags={(tagValue, getTagProps) =>
+                    tagValue.map((option, index) => <Chip label={option.name} {...getTagProps({ index })} disabled={user} />)
+                  }
+                  renderInput={(params) => <TextField {...params} label="Search..." />}
+                />
+              </Grid>
             </DialogForm>
 
             <Grid container alignItems="center" justifyContent="space-around" sx={{ mt: 4 }}>
@@ -243,7 +290,7 @@ const WSForm = (props) => {
 WSForm.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  formData: PropTypes.object.isRequired,
+  formData: PropTypes.object,
   dialogForm: PropTypes.number,
 };
 

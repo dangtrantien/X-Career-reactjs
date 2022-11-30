@@ -10,7 +10,6 @@ import { AppBar, Box, CssBaseline, Toolbar, useMediaQuery } from '@mui/material'
 import Breadcrumbs from 'ui-component/extended/Breadcrumbs';
 import Header from './Header';
 import Sidebar from './Sidebar';
-import navigation from 'menu-items';
 import { drawerWidth } from 'store/constant';
 import { SET_MENU } from 'store/actions';
 
@@ -106,12 +105,12 @@ const MainLayout = ({ page }) => {
         <Outlet />
       ) : (
         <>
-          <Sidebar drawerOpen={leftDrawerOpened} drawerToggle={handleLeftDrawerToggle} />
+          <Sidebar page={page} drawerOpen={leftDrawerOpened} drawerToggle={handleLeftDrawerToggle} />
 
           {/* main content */}
           <Main theme={theme} open={leftDrawerOpened}>
             {/* breadcrumb */}
-            <Breadcrumbs separator={IconChevronRight} navigation={navigation} icon title rightAlign />
+            <Breadcrumbs separator={IconChevronRight} icon title rightAlign />
             <Outlet />
           </Main>
         </>

@@ -118,12 +118,13 @@ const AuthRegister = ({ ...others }) => {
                     swal({
                       text: 'Successfully register.',
                       buttons: false,
-                      timer: 3000,
+                      timer: 2000,
                       icon: 'success',
                     });
+
                     setTimeout(() => {
                       navigate('/login', { replace: true });
-                    }, 3000);
+                    }, 2000);
                   }
                 })
                 .catch((err) => {

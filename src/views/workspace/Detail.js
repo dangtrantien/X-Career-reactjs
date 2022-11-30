@@ -3,10 +3,10 @@ import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 
 // material-ui
-import { Avatar, Typography, Grid, Card, CardMedia } from '@mui/material';
+import { Avatar, Typography, Grid, Button } from '@mui/material';
 
 // icons
-import { IconPencil, IconUsers } from '@tabler/icons';
+import { IconPencil, IconTrash, IconUsers } from '@tabler/icons';
 
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
@@ -14,9 +14,15 @@ import WorkSpaceAPI from 'services/WorkSpaceAPI';
 import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
 import WSForm from './WorkSpaceForm';
 import BForm from 'views/board/BoardForm';
+import io from 'socket.io-client';
+import AnimateButton from 'ui-component/extended/AnimateButton';
+import SocketIo from 'utils/socket.io';
+import BoardList from 'views/dashboard/BoardList';
 
 // ==============================|| WORKSPACE DETAIL ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
+const socket = new SocketIo();
+const socketClient = io.connect('http://localhost:3002');
 
 const Detail = () => {
   const navigate = useNavigate();
@@ -27,13 +33,11 @@ const Detail = () => {
 
   const [workspace, setWorkSpace] = useState({});
   const [member, setMember] = useState();
-  const [board, setBoard] = useState([]);
 
   const loadData = (id) => {
     workSpaceAPI.getById(id).then((result) => {
       setWorkSpace(result.data[0]);
       setMember(result.data[0].userIDs.length);
-      setBoard(result.data[0].boards);
     });
   };
 
@@ -52,11 +56,56 @@ const Detail = () => {
 
   const handleCloseB = () => {
     setOpenB(false);
-    loadData(workSpaceId);
+  };
+
+  const handleDeleteWS = (id) => {
+    swal({
+      title: 'Are you sure?',
+      text: 'Once deleted, you will not be able to recover.',
+      icon: 'warning',
+      buttons: [true, 'Delete'],
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        workSpaceAPI
+          .deleteById(id)
+          .then((res) => {
+            if (res.status === 200) {
+              socket.workspace(res.data);
+
+              //Thông báo thành công
+              swal({
+                text: 'Successfully delete work space.',
+                buttons: false,
+                timer: 2000,
+                icon: 'success',
+              });
+              navigate(`/u/default`, { replace: true });
+            }
+          })
+          .catch(() => {
+            //Thông báo lỗi
+            swal({
+              text: 'Sorry, something went wrong. Please contact to admin for support.',
+              buttons: false,
+              timer: 5000,
+              icon: 'error',
+            });
+          });
+      }
+    });
   };
 
   useEffect(() => {
     loadData(workSpaceId);
+
+    socketClient.on('edit_workspace', (data) => {
+      setWorkSpace(data);
+    });
+
+    socketClient.on('delete_board', () => {
+      loadData(workSpaceId);
+    });
   }, [workSpaceId]);
 
   return (
@@ -72,30 +121,49 @@ const Detail = () => {
           <Typography variant="h1" sx={{ ml: 2 }}>
             {workspace.name}
           </Typography>
-
-          <Grid item sx={{ cursor: 'pointer', ml: 1 }} onClick={handleEditWS}>
-            <IconPencil />
-          </Grid>
         </Grid>
 
-        <Typography variant="h2" sx={{ fontWeight: 500 }}>
-          <IconUsers /> Member ({member})
-        </Typography>
+        <Grid item display="flex" alignItems="center">
+          <Typography variant="h2" sx={{ fontWeight: 500, mr: 2 }}>
+            <IconUsers /> Member ({member})
+          </Typography>
+
+          <AnimateButton>
+            <Button sx={{ mr: 2 }} disableElevation onClick={handleEditWS} variant="contained" color="primary">
+              <IconPencil />
+              Edit
+            </Button>
+          </AnimateButton>
+
+          <AnimateButton>
+            <Button
+              disableElevation
+              onClick={() => {
+                handleDeleteWS(workSpaceId);
+              }}
+              variant="contained"
+              color="primary"
+            >
+              <IconTrash />
+              Delete
+            </Button>
+          </AnimateButton>
+        </Grid>
       </Grid>
 
       <WSForm open={openWS} onClose={handleCloseWS} formData={workspace} dialogForm={1} />
 
-      <BForm open={openB} onClose={handleCloseB} formData={board} wsId={workspace._id} dialogForm={0} />
+      <BForm open={openB} onClose={handleCloseB} wsId={workSpaceId} dialogForm={0} />
 
       <MainCard sx={{ height: '100%' }}>
         <Typography variant="h2" sx={{ mb: 4, fontWeight: 500 }}>
-          Board
+          Your Boards
         </Typography>
 
-        <Grid container spacing={4}>
+        <Grid container spacing={2}>
           <Typography
             variant="h3"
-            sx={{ cursor: 'pointer', bgcolor: 'rgba(128, 0, 128, 0.4)', ml: 4, mt: 5, px: 2, borderRadius: 4 }}
+            sx={{ cursor: 'pointer', bgcolor: 'rgba(128, 0, 128, 0.4)', ml: 4, mt: 4, px: 2, borderRadius: 4 }}
             height={100}
             display="flex"
             alignItems="center"
@@ -104,31 +172,7 @@ const Detail = () => {
             Create a new board
           </Typography>
 
-          {board.map((value) => (
-            <Grid item xs={10} sm={10} md={3} key={value._id} sx={{ position: 'relative' }}>
-              <Card>
-                <CardMedia
-                  sx={{ cursor: 'pointer' }}
-                  component="img"
-                  alt="board"
-                  src={value.bgImg}
-                  //   onClick={() => navigate(`/board/${value._id}`, { replace: true })}
-                />
-              </Card>
-
-              <Typography
-                sx={{
-                  position: 'absolute',
-                  top: 40,
-                  left: 40,
-                  color: 'white',
-                }}
-                variant="h3"
-              >
-                {value.name}
-              </Typography>
-            </Grid>
-          ))}
+          <BoardList id={workSpaceId} />
         </Grid>
       </MainCard>
     </>

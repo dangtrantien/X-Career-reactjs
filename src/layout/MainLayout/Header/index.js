@@ -34,7 +34,7 @@ const Header = ({ handleLeftDrawerToggle, page }) => {
           <LogoSection />
         </Box>
 
-        {page === 'user' || page === 'workspace' ? (
+        {page === 'user' || page === 'dashboard' ? (
           <></>
         ) : (
           <ButtonBase sx={{ borderRadius: '12px', overflow: 'hidden' }}>

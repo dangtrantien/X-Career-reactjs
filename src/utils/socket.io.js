@@ -22,7 +22,11 @@ export default class SocketIo {
     socket.emit('task', data);
   };
 
-  comment = (data) => {
-    socket.emit('comment', data);
+  receiveComment = (data) => {
+    socket.emit('receive_comment', data);
+  };
+
+  editComment = (data) => {
+    socket.emit('edit_comment', data);
   };
 }

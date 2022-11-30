@@ -35,7 +35,7 @@ import io from 'socket.io-client';
 
 // ==============================|| PROFILE MENU ||============================== //
 const userAPI = new UserAPI();
-const socket = io.connect('http://localhost:3002');
+const socketClient = io.connect('http://localhost:3002');
 
 const ProfileSection = () => {
   const theme = useTheme();
@@ -95,7 +95,7 @@ const ProfileSection = () => {
       setUser(res.data[0]);
     });
 
-    socket.on('user', (data) => {
+    socketClient.on('edit_user', (data) => {
       setUser(data);
     });
   }, [userId]);
@@ -220,7 +220,7 @@ const ProfileSection = () => {
                     <ListItemButton
                       sx={{ borderRadius: `${customization.borderRadius}px` }}
                       selected={selectedIndex === 2}
-                      onClick={(event) => handleListItemClick(event, 2, '/u/social-profile/posts')}
+                      onClick={(event) => handleListItemClick(event, 2, '#')}
                     >
                       <ListItemIcon>
                         <IconUser stroke={1.5} size="1.3rem" />

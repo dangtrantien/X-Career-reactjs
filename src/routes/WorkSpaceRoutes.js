@@ -5,15 +5,12 @@ import MainLayout from 'layout/MainLayout';
 import Loadable from 'ui-component/Loadable';
 import { RequireAuth } from 'utils/requireAuth';
 
-// dashboard routing
-const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
-
 // workspace routing
 const WorkSpace = Loadable(lazy(() => import('views/workspace/Detail')));
 
-// ==============================|| MAIN ROUTING ||============================== //
+// ==============================|| WORK SPACE ROUTING ||============================== //
 
-const MainRoutes = {
+const WorkSpaceRoutes = {
   path: '/',
   element: (
     <RequireAuth>
@@ -22,23 +19,10 @@ const MainRoutes = {
   ),
   children: [
     {
-      path: '/',
-      element: <DashboardDefault />,
-    },
-    {
-      path: 'u',
-      children: [
-        {
-          path: 'default',
-          element: <DashboardDefault />,
-        },
-      ],
-    },
-    {
       path: 'w',
       children: [
         {
-          path: ':workSpaceId',
+          path: 'detail/:workSpaceId',
           element: <WorkSpace />,
         },
       ],
@@ -46,4 +30,4 @@ const MainRoutes = {
   ],
 };
 
-export default MainRoutes;
+export default WorkSpaceRoutes;

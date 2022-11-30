@@ -2,17 +2,19 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // material-ui
-import { Avatar, Typography, Stack, Grid, Button } from '@mui/material';
+import { Avatar, Typography, Stack, Grid, Button, Divider } from '@mui/material';
 
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
 import WorkSpaceAPI from 'services/WorkSpaceAPI';
-import List from './List';
+import BoardList from './BoardList';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
+import io from 'socket.io-client';
 
 // ==============================|| DEFAULT DASHBOARD ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
+const socketClient = io.connect('http://localhost:3002');
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -20,17 +22,46 @@ const Dashboard = () => {
 
   const userId = sessionStorage.getItem('id');
 
-  useEffect(() => {
+  const loadData = (id) => {
     workSpaceAPI.getAll().then((result) => {
       const ws = [];
 
       result.data.data.map((res) => {
-        if (res.userID._id === userId) {
-          ws.push(res);
+        if (res.userIDs) {
+          res.userIDs.map((value) => {
+            if (value._id === id) {
+              ws.push(res);
+            }
+          });
         }
       });
-
       setWorkSpace(ws);
+    });
+  };
+
+  useEffect(() => {
+    loadData(userId);
+
+    socketClient.on('edit_workspace', (data) => {
+      workSpaceAPI.getAll().then((result) => {
+        const ws = [];
+
+        result.data.data.map((res) => {
+          if (data._id === res._id) {
+            res = data;
+          }
+
+          if (res.userIDs) {
+            res.userIDs.map((value) => {
+              if (value === userId) {
+                ws.push(res);
+              }
+            });
+          }
+        });
+
+        setWorkSpace(ws);
+      });
     });
   }, [userId]);
 
@@ -43,34 +74,39 @@ const Dashboard = () => {
       <MainCard sx={{ height: '100%' }}>
         <Stack spacing={2}>
           {workspace.map((value) => (
-            <Stack spacing={2} key={value._id} sx={{ mb: 4 }}>
-              <Grid item display="flex" justifyContent="space-between" alignItems="center">
-                <Grid container alignItems="center">
-                  {value.logo === '' ? (
-                    <BackgroundLetterAvatars name={value.name} h={50} w={50} f={30} />
-                  ) : (
-                    <Avatar src={value.logo} variant="rounded" />
-                  )}
+            <>
+              <Stack spacing={2} key={value._id} sx={{ mb: 4 }}>
+                <Grid item display="flex" justifyContent="space-between" alignItems="center">
+                  <Grid container alignItems="center">
+                    {value.logo === '' ? (
+                      <BackgroundLetterAvatars name={value.name} h={50} w={50} f={30} />
+                    ) : (
+                      <Avatar src={value.logo} variant="rounded" />
+                    )}
 
-                  <Typography variant="h2" sx={{ ml: 1, fontWeight: 500 }}>
-                    {value.name}
-                  </Typography>
+                    <Typography variant="h2" sx={{ ml: 1, fontWeight: 500 }}>
+                      {value.name}
+                    </Typography>
+                  </Grid>
+
+                  <AnimateButton>
+                    <Button
+                      disableElevation
+                      onClick={() => navigate(`/w/detail/${value._id}`, { replace: true })}
+                      variant="contained"
+                      color="primary"
+                    >
+                      Detail
+                    </Button>
+                  </AnimateButton>
                 </Grid>
 
-                <AnimateButton>
-                  <Button
-                    disableElevation
-                    onClick={() => navigate(`/w/${value._id}`, { replace: true })}
-                    variant="contained"
-                    color="primary"
-                  >
-                    Detail
-                  </Button>
-                </AnimateButton>
-              </Grid>
-
-              <List id={value._id} />
-            </Stack>
+                <Grid container spacing={2}>
+                  <BoardList id={value._id} />
+                </Grid>
+              </Stack>
+              <Divider />
+            </>
           ))}
         </Stack>
       </MainCard>

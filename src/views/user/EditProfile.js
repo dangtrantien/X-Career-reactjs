@@ -37,10 +37,6 @@ const EditProfile = (props) => {
     onClose(!open);
   };
 
-  useEffect(() => {
-    setUser(formData);
-  }, [formData]);
-
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -71,7 +67,7 @@ const EditProfile = (props) => {
           .updateById(user._id, editUser)
           .then((res) => {
             if (res.data.success === true) {
-              socket.user(editUser);
+              socket.user(res.data.data);
 
               swal({
                 text: 'Successfully updated profile.',
@@ -128,6 +124,10 @@ const EditProfile = (props) => {
         });
     }
   };
+
+  useEffect(() => {
+    setUser(formData);
+  }, [formData]);
 
   return (
     <>
