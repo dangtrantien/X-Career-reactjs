@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/X-Career-reactjs/static/css/main.17c8eadc.css",
-    "main.js": "/X-Career-reactjs/static/js/main.0eee7144.js",
+    "main.js": "/X-Career-reactjs/static/js/main.3178db62.js",
     "static/js/436.927af24f.chunk.js": "/X-Career-reactjs/static/js/436.927af24f.chunk.js",
     "static/js/388.88394537.chunk.js": "/X-Career-reactjs/static/js/388.88394537.chunk.js",
     "static/js/245.bc54cc55.chunk.js": "/X-Career-reactjs/static/js/245.bc54cc55.chunk.js",
@@ -21,7 +21,7 @@
     "static/media/social-google.svg": "/X-Career-reactjs/static/media/social-google.a57081bd95c2519caad91216a8dba3ad.svg",
     "index.html": "/X-Career-reactjs/index.html",
     "main.17c8eadc.css.map": "/X-Career-reactjs/static/css/main.17c8eadc.css.map",
-    "main.0eee7144.js.map": "/X-Career-reactjs/static/js/main.0eee7144.js.map",
+    "main.3178db62.js.map": "/X-Career-reactjs/static/js/main.3178db62.js.map",
     "436.927af24f.chunk.js.map": "/X-Career-reactjs/static/js/436.927af24f.chunk.js.map",
     "388.88394537.chunk.js.map": "/X-Career-reactjs/static/js/388.88394537.chunk.js.map",
     "245.bc54cc55.chunk.js.map": "/X-Career-reactjs/static/js/245.bc54cc55.chunk.js.map",
@@ -39,6 +39,6 @@
   },
   "entrypoints": [
     "static/css/main.17c8eadc.css",
-    "static/js/main.0eee7144.js"
+    "static/js/main.3178db62.js"
   ]
 }
