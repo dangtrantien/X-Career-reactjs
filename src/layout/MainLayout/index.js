@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
@@ -17,7 +18,6 @@ import { SET_MENU } from 'store/actions';
 import { IconChevronRight } from '@tabler/icons';
 
 // assets
-import PropTypes from 'prop-types';
 
 // styles
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({ theme, open }) => ({

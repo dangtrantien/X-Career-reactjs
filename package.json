@@ -2,7 +2,7 @@
   "name": "x-career-reactjs",
   "version": "3.2.0",
   "private": true,
-  "homepage": "https://x-career-06-team1-fe.as.r.appspot.com/u/default",
+  "homepage": "https://dangtrantien.github.io/X-Career-reactjs",
   "dependencies": {
     "@emotion/cache": "^11.9.3",
     "@emotion/react": "^11.9.3",
@@ -18,14 +18,19 @@
     "axios": "^1.2.0",
     "bcryptjs": "^2.4.3",
     "crypto-browserify": "^3.12.0",
+    "draft-js": "^0.11.7",
+    "draftjs-to-markdown": "^0.6.0",
+    "emoji-picker-react": "^4.4.7",
     "formik": "^2.2.9",
     "framer-motion": "^6.3.16",
+    "gh-pages": "^4.0.0",
     "material-ui-popup-state": "^4.0.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.0",
     "react-device-detect": "^2.2.2",
     "react-dom": "^18.2.0",
+    "react-draft-wysiwyg": "^1.15.0",
     "react-perfect-scrollbar": "^1.5.8",
     "react-redux": "^8.0.2",
     "react-router": "6.3.0",
@@ -40,7 +45,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [

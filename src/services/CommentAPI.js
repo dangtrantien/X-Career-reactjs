@@ -3,9 +3,9 @@ import { BaseAPI } from './baseAPI';
 
 const token = sessionStorage.getItem('token');
 
-export default class WorkSpaceAPI extends BaseAPI {
+export default class CommentAPI extends BaseAPI {
   constructor() {
-    super({ endpoint: 'api/workSpaces' });
+    super({ endpoint: 'api/comments' });
   }
 
   createNew = async (data) => {
@@ -14,29 +14,19 @@ export default class WorkSpaceAPI extends BaseAPI {
         Authorization: `Bearer ${token}`,
       },
       method: 'POST',
-      url: `${this.api}/${this.endpoint}/createWorkSpace`,
+      url: `${this.api}/${this.endpoint}/addComment`,
       data: {
-        workSpace: data,
+        comment: data,
       },
     });
 
     return res;
   };
 
-  getAll = async () => {
+  getByTaskID = async (id) => {
     const res = await axios({
       method: 'GET',
-      url: `${this.api}/${this.endpoint}/getAllWorkSpacesOfAllUsers`,
-      data: null,
-    });
-
-    return res;
-  };
-
-  getByName = async (name) => {
-    const res = await axios({
-      method: 'GET',
-      url: `${this.api}/${this.endpoint}/getByName?name=${name}`,
+      url: `${this.api}/${this.endpoint}/getCommentByTaskID?id=${id}`,
       data: null,
     });
 
@@ -46,9 +36,9 @@ export default class WorkSpaceAPI extends BaseAPI {
   updateByID = async (id, data) => {
     const res = await axios({
       method: 'PUT',
-      url: `${this.api}/${this.endpoint}/updateWorkSpaceByID?id=${id}`,
+      url: `${this.api}/${this.endpoint}/updateCommentByID?id=${id}`,
       data: {
-        workSpace: data,
+        comment: data,
       },
     });
 

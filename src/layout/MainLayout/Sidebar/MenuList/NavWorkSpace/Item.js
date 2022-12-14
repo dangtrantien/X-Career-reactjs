@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { GlobalStyles, Grid, ListItemButton, ListItemIcon, ListItemText, Typography, useMediaQuery } from '@mui/material';
+import { Grid, ListItemButton, ListItemIcon, ListItemText, Typography, useMediaQuery } from '@mui/material';
 
 // icon
 import { IconTrash } from '@tabler/icons';
@@ -14,11 +14,12 @@ import { IconTrash } from '@tabler/icons';
 import { MENU_OPEN, SET_MENU } from 'store/actions';
 import swal from 'sweetalert';
 import BoardAPI from 'services/BoardAPI';
-import SocketIo from 'utils/socket.io';
+import io from 'socket.io-client';
+import { host } from 'services/baseAPI';
 
 // ==============================|| SIDEBAR WORK SPACE LIST ITEMS ||============================== //
 const boardAPI = new BoardAPI();
-const socket = new SocketIo();
+const socket = io(host);
 
 const NavWorkSpaceItem = ({ item, wsId }) => {
   const navigate = useNavigate();
@@ -43,10 +44,10 @@ const NavWorkSpaceItem = ({ item, wsId }) => {
     }).then((willDelete) => {
       if (willDelete) {
         boardAPI
-          .deleteById(id)
+          .deleteByID(id)
           .then((res) => {
             if (res.status === 200) {
-              socket.board(res.data);
+              socket.emit('board', res.data);
 
               //Thông báo thành công
               swal({
@@ -84,66 +85,57 @@ const NavWorkSpaceItem = ({ item, wsId }) => {
   }, []);
 
   return (
-    <>
-      <GlobalStyles
-        styles={{
-          '.hide': {
-            display: 'none',
-          },
-          '.show:hover + .hide': {
+    <Grid container sx={{ position: 'relative' }}>
+      <ListItemButton
+        className="show"
+        sx={{
+          borderRadius: `${customization.borderRadius}px`,
+          mb: 0.5,
+          alignItems: 'center',
+          '&:hover + .hide': {
             display: 'block',
           },
         }}
-      />
+        selected={customization.isOpen.findIndex((id) => id === item._id) > -1}
+        onClick={() => itemHandler(item._id)}
+      >
+        <ListItemIcon>
+          <img src={item.bgImg.data} alt={item.name} height={25} width={30} />
+        </ListItemIcon>
 
-      <Grid container sx={{ position: 'relative' }}>
-        <ListItemButton
-          className="show"
-          key={item._id}
-          sx={{
-            borderRadius: `${customization.borderRadius}px`,
-            mb: 0.5,
-            alignItems: 'flex-end',
-          }}
-          selected={customization.isOpen.findIndex((id) => id === item._id) > -1}
-          onClick={() => itemHandler(item._id)}
-        >
-          <ListItemIcon>
-            <img src={item.bgImg} alt={item.name} height={25} width={30} />
-          </ListItemIcon>
+        <ListItemText
+          primary={
+            <Typography
+              fontWeight={700}
+              variant={customization.isOpen.findIndex((id) => id === item._id) > -1 ? 'h5' : 'body1'}
+              color="inherit"
+              sx={{ width: 160, overflow: 'hidden', wordBreak: 'break-word' }}
+            >
+              {item.name}
+            </Typography>
+          }
+        />
+      </ListItemButton>
 
-          <ListItemText
-            primary={
-              <Typography
-                fontWeight={700}
-                variant={customization.isOpen.findIndex((id) => id === item._id) > -1 ? 'h5' : 'body1'}
-                color="inherit"
-              >
-                {item.name}
-              </Typography>
-            }
-          />
-        </ListItemButton>
-
-        <Grid
-          className="hide"
-          sx={{
-            cursor: 'pointer',
-            position: 'absolute',
-            top: 12,
-            right: 0,
-            minWidth: 30,
-            p: '0 0 0 0',
-            '&:hover': { display: 'block', color: '#90CAF9' },
-          }}
-          onClick={() => {
-            handleDeleteB(item._id);
-          }}
-        >
-          <IconTrash />
-        </Grid>
+      <Grid
+        className="hide"
+        sx={{
+          display: 'none',
+          cursor: 'pointer',
+          position: 'absolute',
+          top: 12,
+          right: 0,
+          minWidth: 30,
+          p: '0 0 0 0',
+          '&:hover': { display: 'block', color: '#90CAF9' },
+        }}
+        onClick={() => {
+          handleDeleteB(item._id);
+        }}
+      >
+        <IconTrash />
       </Grid>
-    </>
+    </Grid>
   );
 };
 

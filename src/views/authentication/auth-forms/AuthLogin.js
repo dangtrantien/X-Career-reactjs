@@ -109,7 +109,7 @@ const AuthLogin = ({ ...others }) => {
                       },
                       (err) => Promise.reject(err)
                     );
-                    navigate('/u/default', { replace: true });
+                    navigate('/', { replace: true });
                   }
                 })
                 .catch((err) => {
@@ -212,7 +212,7 @@ const AuthLogin = ({ ...others }) => {
             </form>
           )}
         </Formik>
-
+        {/* 
         <Grid item xs={12}>
           <Box
             sx={{
@@ -264,7 +264,7 @@ const AuthLogin = ({ ...others }) => {
               Sign in with Google
             </Button>
           </AnimateButton>
-        </Grid>
+        </Grid> */}
       </Grid>
     </>
   );

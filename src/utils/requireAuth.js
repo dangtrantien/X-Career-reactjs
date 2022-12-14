@@ -1,5 +1,5 @@
-import { Navigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { Navigate, useLocation } from 'react-router-dom';
 
 export function RequireAuth({ children }) {
   const token = sessionStorage.getItem('token');

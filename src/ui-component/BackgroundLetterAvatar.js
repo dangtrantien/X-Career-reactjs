@@ -1,6 +1,7 @@
+import PropTypes from 'prop-types';
+
 // material-ui
 import { Avatar } from '@mui/material';
-import PropTypes from 'prop-types';
 
 // ==============================|| CUSTOM AVATAR ||============================== //
 
@@ -44,7 +45,7 @@ export default function BackgroundLetterAvatars({ defaultValue, name, h, w, f })
 BackgroundLetterAvatars.propTypes = {
   defaultValue: PropTypes.any,
   name: PropTypes.string,
-  h: PropTypes.number,
-  w: PropTypes.number,
-  f: PropTypes.number,
+  h: PropTypes.any,
+  w: PropTypes.any,
+  f: PropTypes.any,
 };

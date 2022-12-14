@@ -10,16 +10,18 @@ import { IconPlus } from '@tabler/icons';
 // project imports
 import NavWorkSpaceItem from './Item';
 import WorkSpaceAPI from 'services/WorkSpaceAPI';
-import io from 'socket.io-client';
 import BForm from 'views/board/BoardForm';
 import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
+import io from 'socket.io-client';
+import { host } from 'services/baseAPI';
 
 // ==============================|| SIDEBAR WORK SPACE LIST ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
-const socketClient = io.connect('http://localhost:3002');
+const socket = io(host);
 
 const WorkSpaceList = () => {
   const { workSpaceId } = useParams();
+  const userId = sessionStorage.getItem('id');
 
   const [openB, setOpenB] = useState(false);
 
@@ -27,9 +29,19 @@ const WorkSpaceList = () => {
   const [board, setBoard] = useState([]);
 
   const loadData = (id) => {
-    workSpaceAPI.getById(id).then((result) => {
+    workSpaceAPI.getByID(id).then((result) => {
+      const arr = [];
+
+      result.data[0].boards.map((value) => {
+        value.member.map((user) => {
+          if (user._id === userId) {
+            arr.push(value);
+          }
+        });
+      });
+
+      setBoard(arr);
       setWorkSpace(result.data[0]);
-      setBoard(result.data[0].boards);
     });
   };
 
@@ -39,13 +51,16 @@ const WorkSpaceList = () => {
 
   const handleCloseB = () => {
     setOpenB(false);
-    loadData(workSpaceId);
   };
 
   useEffect(() => {
     loadData(workSpaceId);
 
-    socketClient.on('delete_board', () => {
+    socket.on('workspace', () => {
+      loadData(workSpaceId);
+    });
+
+    socket.on('board', () => {
       loadData(workSpaceId);
     });
   }, [workSpaceId]);
@@ -53,13 +68,17 @@ const WorkSpaceList = () => {
   return (
     <>
       <Grid container alignItems="flex-end">
-        {workspace.logo === '' ? (
-          <BackgroundLetterAvatars name={workspace.name} h={40} w={40} />
-        ) : (
-          <Avatar src={workspace.logo} variant="rounded" sx={{ height: 40, width: 40 }} />
+        {workspace.logo && (
+          <>
+            {workspace.logo.data === '' ? (
+              <BackgroundLetterAvatars name={workspace.name} h={40} w={40} />
+            ) : (
+              <Avatar src={workspace.logo.data} variant="rounded" sx={{ height: 40, width: 40 }} />
+            )}
+          </>
         )}
 
-        <Typography variant="h3" fontWeight={500} sx={{ ml: 2 }}>
+        <Typography variant="h3" fontWeight={500} sx={{ width: 160, ml: 2, overflow: 'hidden', wordBreak: 'break-word' }}>
           {workspace.name}
         </Typography>
       </Grid>
@@ -75,11 +94,11 @@ const WorkSpaceList = () => {
         </Grid>
       </Grid>
 
-      <BForm open={openB} onClose={handleCloseB} wsId={workSpaceId} dialogForm={0} />
-
       {board.map((item) => (
         <NavWorkSpaceItem key={item._id} item={item} wsId={workSpaceId} />
       ))}
+
+      <BForm open={openB} onClose={handleCloseB} wsId={workSpaceId} dialogForm={0} />
     </>
   );
 };

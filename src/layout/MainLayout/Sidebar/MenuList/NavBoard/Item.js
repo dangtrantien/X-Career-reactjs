@@ -8,8 +8,8 @@ import { useTheme } from '@mui/material/styles';
 import {
   Button,
   ButtonGroup,
+  ClickAwayListener,
   Fade,
-  GlobalStyles,
   Grid,
   ListItemButton,
   ListItemIcon,
@@ -25,12 +25,13 @@ import { IconDots, IconPencil, IconTrash } from '@tabler/icons';
 import { MENU_OPEN, SET_MENU } from 'store/actions';
 import swal from 'sweetalert';
 import BoardAPI from 'services/BoardAPI';
-import SocketIo from 'utils/socket.io';
 import BForm from 'views/board/BoardForm';
+import io from 'socket.io-client';
+import { host } from 'services/baseAPI';
 
 // ==============================|| SIDEBAR BOARD LIST ITEMS ||============================== //
 const boardAPI = new BoardAPI();
-const socket = new SocketIo();
+const socket = io(host);
 
 const NavBoardItem = ({ item, index, wsId }) => {
   const navigate = useNavigate();
@@ -55,13 +56,16 @@ const NavBoardItem = ({ item, index, wsId }) => {
     setChecked((prev) => !prev);
   };
 
+  const handleClickAway = () => {
+    setChecked(false);
+  };
+
   const handleEditB = () => {
     setOpenB(true);
   };
 
   const handleCloseB = () => {
     setOpenB(false);
-    loadData(boardId);
   };
 
   const handleDeleteB = (id) => {
@@ -74,10 +78,10 @@ const NavBoardItem = ({ item, index, wsId }) => {
     }).then((willDelete) => {
       if (willDelete) {
         boardAPI
-          .deleteById(id)
+          .deleteByID(id)
           .then((res) => {
             if (res.status === 200) {
-              socket.board(res.data);
+              socket.emit('board', res.data);
 
               //Thông báo thành công
               swal({
@@ -116,31 +120,21 @@ const NavBoardItem = ({ item, index, wsId }) => {
 
   return (
     <>
-      <GlobalStyles
-        styles={{
-          '.hide': {
-            display: 'none',
-          },
-          '.show:hover + .hide': {
-            display: 'block',
-          },
-        }}
-      />
-
       <Grid container sx={{ position: 'relative' }}>
         <ListItemButton
-          className="show"
-          key={item._id}
           sx={{
             borderRadius: `${customization.borderRadius}px`,
             mb: 0.5,
-            alignItems: 'flex-end',
+            alignItems: 'center',
+            '&:hover + .hide': {
+              display: 'block',
+            },
           }}
           selected={customization.isOpen.findIndex((id) => id === item._id) > -1}
           onClick={() => itemHandler(item._id)}
         >
           <ListItemIcon>
-            <img src={item.bgImg} alt={item.name} height={25} width={30} />
+            <img src={item.bgImg.data} alt={item.name} height={25} width={30} />
           </ListItemIcon>
 
           <ListItemText
@@ -149,6 +143,7 @@ const NavBoardItem = ({ item, index, wsId }) => {
                 fontWeight={700}
                 variant={customization.isOpen.findIndex((id) => id === item._id) > -1 ? 'h5' : 'body1'}
                 color="inherit"
+                sx={{ width: 160, overflow: 'hidden', wordBreak: 'break-word' }}
               >
                 {item.name}
               </Typography>
@@ -156,26 +151,27 @@ const NavBoardItem = ({ item, index, wsId }) => {
           />
         </ListItemButton>
 
-        <Grid
-          className="hide"
-          sx={{
-            cursor: 'pointer',
-            position: 'absolute',
-            top: 12,
-            right: 0,
-            minWidth: 30,
-            p: '0 0 0 0',
-            '&:hover': { display: 'block', color: '#90CAF9' },
-          }}
-          onClick={() => {
-            handleMoreVert(index);
-          }}
-        >
-          <IconDots />
-        </Grid>
+        <ClickAwayListener onClickAway={handleClickAway}>
+          <Grid
+            className="hide"
+            sx={{
+              display: 'none',
+              cursor: 'pointer',
+              position: 'absolute',
+              top: 12,
+              right: 0,
+              minWidth: 30,
+              p: '0 0 0 0',
+              '&:hover': { display: 'block', color: '#90CAF9' },
+            }}
+            onClick={() => {
+              handleMoreVert(index);
+            }}
+          >
+            <IconDots />
+          </Grid>
+        </ClickAwayListener>
       </Grid>
-
-      <BForm open={openB} onClose={handleCloseB} formData={item} dialogForm={1} />
 
       {checked === true && (
         <Fade in={moreVertIndex === index ? checked : !checked}>
@@ -196,6 +192,8 @@ const NavBoardItem = ({ item, index, wsId }) => {
           </ButtonGroup>
         </Fade>
       )}
+
+      <BForm open={openB} onClose={handleCloseB} formData={item} wsId={wsId} dialogForm={1} />
     </>
   );
 };

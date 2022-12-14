@@ -7,16 +7,22 @@ import { Avatar, Button, Typography, Divider, Grid, Stack } from '@mui/material'
 import UserAPI from 'services/UserAPI';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import EditProfile from './EditProfile';
+import io from 'socket.io-client';
+import { host } from 'services/baseAPI';
 
 // ==============================|| USER PROFILE PAGE ||============================== //
 const userAPI = new UserAPI();
+const socket = io(host);
 
 const Profile = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [user, setUser] = useState({
     name: '',
     email: '',
-    avatar: '',
+    avatar: {
+      name: '',
+      data: '',
+    },
     gender: '',
     group: '',
     position: '',
@@ -26,7 +32,7 @@ const Profile = () => {
   const userId = sessionStorage.getItem('id');
 
   const loadData = (id) => {
-    userAPI.getById(id).then((res) => setUser(res.data[0]));
+    userAPI.getByID(id).then((res) => setUser(res.data[0]));
   };
 
   const handleOpenDialog = () => {
@@ -35,11 +41,14 @@ const Profile = () => {
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    loadData(userId);
   };
 
   useEffect(() => {
     loadData(userId);
+
+    socket.on('user', () => {
+      loadData(userId);
+    });
   }, [userId]);
 
   return (
@@ -53,7 +62,7 @@ const Profile = () => {
           sx={{ width: '100%', height: '50%', bgcolor: 'rgba(128, 128, 128, 0.1)' }}
         >
           <Grid container justifyContent="center" alignItems="center" sx={{ pt: 15 }}>
-            <Avatar alt="profile user" src={user.avatar} sx={{ height: 120, width: 120, mr: 2 }} />
+            <Avatar alt="profile user" src={user.avatar.data} sx={{ height: 120, width: 120, mr: 2 }} />
 
             <Grid item sx={{ mr: 2 }}>
               <Stack spacing={2}>

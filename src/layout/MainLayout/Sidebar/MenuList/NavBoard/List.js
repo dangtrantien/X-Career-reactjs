@@ -12,29 +12,46 @@ import { IconPlus } from '@tabler/icons';
 import NavWorkSpaceItem from './Item';
 import WorkSpaceAPI from 'services/WorkSpaceAPI';
 import BoardAPI from 'services/BoardAPI';
-import io from 'socket.io-client';
 import BForm from 'views/board/BoardForm';
 import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
+import io from 'socket.io-client';
+import { host } from 'services/baseAPI';
 
 // ==============================|| SIDEBAR BOARD LIST ||============================== //
 const boardAPI = new BoardAPI();
 const workSpaceAPI = new WorkSpaceAPI();
-const socketClient = io.connect('http://localhost:3002');
+const socket = io(host);
 
 const BoardList = () => {
   const navigate = useNavigate();
   const { boardId } = useParams();
+  const userId = sessionStorage.getItem('id');
 
   const [openB, setOpenB] = useState(false);
 
   const [board, setBoard] = useState([]);
   const [workspace, setWorkSpace] = useState([]);
 
+  const [countB, setCountB] = useState();
+
   const loadData = (id) => {
-    boardAPI.getById(id).then((result) => {
-      workSpaceAPI.getById(result.data[0].workSpaceID).then((res) => {
+    boardAPI.getByID(id).then((result) => {
+      workSpaceAPI.getByID(result.data[0].workSpaceID).then((res) => {
+        const arr = [];
+        let count = 0;
+
+        res.data[0].boards.map((value) => {
+          value.member.map((user) => {
+            if (user._id === userId) {
+              arr.push(value);
+              count++;
+            }
+          });
+        });
+
+        setBoard(arr);
         setWorkSpace(res.data[0]);
-        setBoard(res.data[0].boards);
+        setCountB(count);
       });
     });
   };
@@ -45,17 +62,16 @@ const BoardList = () => {
 
   const handleCloseB = () => {
     setOpenB(false);
-    loadData(boardId);
   };
 
   useEffect(() => {
     loadData(boardId);
 
-    socketClient.on('edit_board', () => {
+    socket.on('workspace', () => {
       loadData(boardId);
     });
 
-    socketClient.on('delete_board', () => {
+    socket.on('board', () => {
       loadData(boardId);
     });
   }, [boardId]);
@@ -68,14 +84,18 @@ const BoardList = () => {
           navigate(`w/detail/${workspace._id}`, { replace: true });
         }}
       >
-        <Grid container alignItems="flex-end" sx={{ px: 3, py: 2 }}>
-          {workspace.logo === '' ? (
-            <BackgroundLetterAvatars name={workspace.name} h={40} w={40} />
-          ) : (
-            <Avatar src={workspace.logo} variant="rounded" sx={{ height: 40, width: 40 }} />
+        <Grid item display="flex" alignItems="center" sx={{ px: 3, py: 2 }}>
+          {workspace.logo && (
+            <>
+              {workspace.logo.data === '' ? (
+                <BackgroundLetterAvatars name={workspace.name} h={40} w={40} />
+              ) : (
+                <Avatar src={workspace.logo.data} variant="rounded" sx={{ height: 40, width: 40 }} />
+              )}
+            </>
           )}
 
-          <Typography variant="h3" fontWeight={500} sx={{ ml: 2 }}>
+          <Typography variant="h3" fontWeight={500} sx={{ ml: 2, overflow: 'hidden', wordBreak: 'break-word' }}>
             {workspace.name}
           </Typography>
         </Grid>
@@ -92,11 +112,29 @@ const BoardList = () => {
         </Grid>
       </Grid>
 
-      <BForm open={openB} onClose={handleCloseB} wsId={workspace._id} dialogForm={0} />
+      {countB === 0 ? (
+        <>
+          <Typography variant="h4" fontWeight={300} sx={{ my: 2 }}>
+            You don't have any panels in this Workspace yet. The boards you create or join will show up here.
+          </Typography>
 
-      {board.map((item, index) => (
-        <NavWorkSpaceItem key={item._id} item={item} index={index} wsId={workspace._id} />
-      ))}
+          <Typography
+            variant="subtitle1"
+            sx={{ cursor: 'pointer', textDecoration: 'underline', '&:hover': { color: '#90CAF9' } }}
+            onClick={handleCreateB}
+          >
+            Create Table
+          </Typography>
+        </>
+      ) : (
+        <>
+          {board.map((item, index) => (
+            <NavWorkSpaceItem key={item._id} item={item} index={index} wsId={workspace._id} />
+          ))}
+        </>
+      )}
+
+      <BForm open={openB} onClose={handleCloseB} wsId={workspace._id} dialogForm={0} />
     </>
   );
 };

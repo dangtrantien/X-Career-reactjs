@@ -1,46 +1,49 @@
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 // material-ui
-import { Button, OutlinedInput, Typography, Grid, Dialog, Box, DialogContent, Autocomplete, TextField, Chip } from '@mui/material';
+import { Button, OutlinedInput, Typography, Grid, Dialog, Box, DialogContent, DialogTitle } from '@mui/material';
 
 // icons
 
 // project imports
 import swal from 'sweetalert';
-import PropTypes from 'prop-types';
 import WorkSpaceAPI from 'services/WorkSpaceAPI';
 import UserAPI from 'services/UserAPI';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import InputFileButton from 'ui-component/extended/InputFileButton';
-import SocketIo from 'utils/socket.io';
 import DialogForm from 'ui-component/extended/DialogForm';
 import EndcodeFileBase64 from 'utils/endcodeFileBase64';
+import AutocompleteBtn from 'ui-component/extended/AutocompleteBtn';
+import io from 'socket.io-client';
+import { host } from 'services/baseAPI';
 
 // ==============================|| WORKSPACE FORM ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
 const userAPI = new UserAPI();
-const socket = new SocketIo();
+const socket = io(host);
 
 const WSForm = (props) => {
   const { open, onClose, formData, dialogForm } = props;
   const navigate = useNavigate();
-  const userID = sessionStorage.getItem('id');
 
   const [workspace, setWorkSpace] = useState({});
 
   const [users, setUsers] = useState([]);
-  const [user, setUser] = useState({});
   const [member, setMember] = useState([]);
 
   const handleClose = () => {
     onClose(!open);
   };
 
-  const handleChange = (event, value) => {
+  const handleChange = (event) => {
     const name = event.target.name;
-    const data = event.target.value;
-    setWorkSpace({ ...workspace, [name]: data });
+    const value = event.target.value;
+    setWorkSpace({ ...workspace, [name]: value });
+  };
+
+  const handleMemberChange = (event, value) => {
     setMember(value);
   };
 
@@ -49,7 +52,7 @@ const WSForm = (props) => {
     const data = new FormData(e.currentTarget);
     const workSpace = {
       name: data.get('name'),
-      userIDs: member,
+      member: member,
     };
 
     //Kiểm tra có tên workspace hay không
@@ -92,14 +95,14 @@ const WSForm = (props) => {
           const base64 = await EndcodeFileBase64(data.get('logo'));
 
           //Kiểm tra có đúng là image hay không
-          if (base64.match(/[^:/]\w+\//)[0] === 'image/') {
+          if (base64.type.match(/[^:/]\w+\//)[0] === 'image/') {
             workSpace.logo = base64;
 
             workSpaceAPI
-              .updateById(data.get('_id'), workSpace)
+              .updateByID(data.get('_id'), workSpace)
               .then((res) => {
                 if (res.data.success === true) {
-                  socket.workspace(res.data.data);
+                  socket.emit('workspace', res.data.data);
 
                   swal({
                     text: 'Successfully update work space.',
@@ -131,10 +134,10 @@ const WSForm = (props) => {
           }
         } else {
           workSpaceAPI
-            .updateById(data.get('_id'), workSpace)
+            .updateByID(data.get('_id'), workSpace)
             .then((res) => {
               if (res.data.success === true) {
-                socket.workspace(res.data.data);
+                socket.emit('workspace', res.data.data);
 
                 swal({
                   text: 'Successfully update work space.',
@@ -164,126 +167,116 @@ const WSForm = (props) => {
   useEffect(() => {
     userAPI.getAll({ skip: 0, limit: 1000, orderBy: 'name' }).then((res) => {
       setUsers(res.data.data);
-
-      res.data.data.map((value) => {
-        if (value._id === userID) {
-          setUser(value);
-        }
-      });
     });
 
     if (dialogForm === 0) {
       setWorkSpace({
         _id: '',
         name: '',
-        logo: '',
+        logo: {
+          name: '',
+          data: '',
+        },
       });
       setMember([]);
     } else if (dialogForm === 1) {
       setWorkSpace(formData);
-      setMember(formData.userIDs);
+      setMember(formData.member);
     }
-  }, [dialogForm, formData, userID]);
+  }, [dialogForm, formData]);
 
   return (
-    <>
-      <Dialog open={open} onClose={handleClose}>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <DialogContent spacing={2}>
-            <DialogForm value={dialogForm} index={0}>
-              <Grid sx={{ display: 'none' }}>
-                <Typography variant="h4">Id:</Typography>
+    <Dialog open={open} onClose={handleClose} scroll="body">
+      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <DialogForm value={dialogForm} index={0}>
+          <DialogTitle display="flex" justifyContent="center" sx={{ fontSize: 20, fontWeight: 700 }}>
+            Create Work Space
+          </DialogTitle>
 
-                <OutlinedInput id="_id" name="_id" value={workspace._id} onChange={handleChange} variant="standard" />
-              </Grid>
+          <DialogContent spacing={2} dividers>
+            <Grid sx={{ display: 'none' }}>
+              <Typography variant="h4">Id:</Typography>
 
-              <Grid container alignItems="center" sx={{ height: 70 }}>
-                <Typography sx={{ mr: 2 }} color="primary" variant="h5">
-                  Work space name:
-                </Typography>
+              <OutlinedInput id="_id" name="_id" value={workspace._id} onChange={handleChange} variant="standard" />
+            </Grid>
 
-                <OutlinedInput
-                  id="name"
-                  type="text"
-                  value={workspace.name}
-                  name="name"
-                  onChange={handleChange}
-                  placeholder="Enter work space name"
-                />
-              </Grid>
-            </DialogForm>
+            <Grid container alignItems="center" sx={{ height: 70 }}>
+              <Typography sx={{ mr: 2 }} color="primary" variant="h5">
+                Work space name:
+              </Typography>
 
-            <DialogForm value={dialogForm} index={1}>
-              <Grid sx={{ display: 'none' }}>
-                <Typography variant="h4">Id:</Typography>
-
-                <OutlinedInput id="_id" name="_id" value={workspace._id} onChange={handleChange} variant="standard" />
-              </Grid>
-
-              <Grid container alignItems="center">
-                <Typography sx={{ mr: 2 }} color="primary" variant="h5">
-                  Work space logo:
-                </Typography>
-
-                <InputFileButton defaultValue={workspace.logo} logo={workspace.name} name="logo" type="image" />
-              </Grid>
-
-              <Grid container alignItems="center" sx={{ height: 70 }}>
-                <Typography sx={{ mr: 2 }} color="primary" variant="h5">
-                  Work space name:
-                </Typography>
-
-                <OutlinedInput
-                  id="name"
-                  type="text"
-                  value={workspace.name}
-                  name="name"
-                  onChange={handleChange}
-                  placeholder="Enter work space name"
-                />
-              </Grid>
-
-              <Grid>
-                <Typography sx={{ mr: 2 }} color="primary" variant="h5">
-                  Add member to workspace:
-                </Typography>
-
-                <Autocomplete
-                  sx={{ mt: 2 }}
-                  multiple
-                  filterSelectedOptions
-                  limitTags={2}
-                  id="userIDs"
-                  value={member}
-                  onChange={handleChange}
-                  options={users}
-                  getOptionLabel={(option) => option.name}
-                  getOptionDisabled={(option) => option === user}
-                  renderTags={(tagValue, getTagProps) =>
-                    tagValue.map((option, index) => <Chip label={option.name} {...getTagProps({ index })} disabled={user} />)
-                  }
-                  renderInput={(params) => <TextField {...params} label="Search..." />}
-                />
-              </Grid>
-            </DialogForm>
-
-            <Grid container alignItems="center" justifyContent="space-around" sx={{ mt: 4 }}>
-              <AnimateButton sx={{ mr: 4 }}>
-                <Button disableElevation size="large" onClick={handleClose} variant="contained" color="secondary">
-                  Cancel
-                </Button>
-              </AnimateButton>
-
-              <AnimateButton>
-                <Button disableElevation size="large" type="submit" variant="contained" color="primary">
-                  Save
-                </Button>
-              </AnimateButton>
+              <OutlinedInput
+                id="name"
+                type="text"
+                value={workspace.name}
+                name="name"
+                onChange={handleChange}
+                placeholder="Enter work space name"
+              />
             </Grid>
           </DialogContent>
-        </Box>
-      </Dialog>
-    </>
+        </DialogForm>
+
+        <DialogForm value={dialogForm} index={1}>
+          <DialogTitle display="flex" justifyContent="center" sx={{ fontSize: 20, fontWeight: 700 }}>
+            Edit Work Space
+          </DialogTitle>
+
+          <DialogContent spacing={2} dividers>
+            <Grid sx={{ display: 'none' }}>
+              <Typography variant="h4">Id:</Typography>
+
+              <OutlinedInput id="_id" name="_id" value={workspace._id} onChange={handleChange} variant="standard" />
+            </Grid>
+
+            <Grid container alignItems="center">
+              <Typography sx={{ mr: 2 }} color="primary" variant="h5">
+                Work space logo:
+              </Typography>
+
+              {workspace.logo && <InputFileButton defaultValue={workspace.logo.data} logo={workspace.name} name="logo" />}
+            </Grid>
+
+            <Grid container alignItems="center" sx={{ height: 70 }}>
+              <Typography sx={{ mr: 2 }} color="primary" variant="h5">
+                Work space name:
+              </Typography>
+
+              <OutlinedInput
+                id="name"
+                type="text"
+                value={workspace.name}
+                name="name"
+                onChange={handleChange}
+                placeholder="Enter work space name"
+              />
+            </Grid>
+
+            <Grid>
+              <Typography sx={{ mt: 2 }} color="primary" variant="h5">
+                Add member to workspace:
+              </Typography>
+
+              <AutocompleteBtn options={users} member={member} handleChange={handleMemberChange} />
+            </Grid>
+          </DialogContent>
+        </DialogForm>
+
+        <Grid container alignItems="center" justifyContent="space-around" sx={{ my: 2 }}>
+          <AnimateButton sx={{ mr: 4 }}>
+            <Button disableElevation size="large" onClick={handleClose} variant="contained" color="secondary">
+              Cancel
+            </Button>
+          </AnimateButton>
+
+          <AnimateButton>
+            <Button disableElevation size="large" type="submit" variant="contained" color="primary">
+              Save
+            </Button>
+          </AnimateButton>
+        </Grid>
+      </Box>
+    </Dialog>
   );
 };
 
@@ -291,7 +284,7 @@ WSForm.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   formData: PropTypes.object,
-  dialogForm: PropTypes.number,
+  dialogForm: PropTypes.number.isRequired,
 };
 
 export default WSForm;

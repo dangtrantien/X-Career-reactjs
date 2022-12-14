@@ -1,4 +1,3 @@
-// project imports
 import PropTypes from 'prop-types';
 
 // ==============================|| DIALOG FORM WRAPPER ||============================== //

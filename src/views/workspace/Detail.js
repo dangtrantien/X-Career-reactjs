@@ -14,15 +14,14 @@ import WorkSpaceAPI from 'services/WorkSpaceAPI';
 import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
 import WSForm from './WorkSpaceForm';
 import BForm from 'views/board/BoardForm';
-import io from 'socket.io-client';
 import AnimateButton from 'ui-component/extended/AnimateButton';
-import SocketIo from 'utils/socket.io';
 import BoardList from 'views/dashboard/BoardList';
+import io from 'socket.io-client';
+import { host } from 'services/baseAPI';
 
 // ==============================|| WORKSPACE DETAIL ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
-const socket = new SocketIo();
-const socketClient = io.connect('http://localhost:3002');
+const socket = io(host);
 
 const Detail = () => {
   const navigate = useNavigate();
@@ -35,9 +34,9 @@ const Detail = () => {
   const [member, setMember] = useState();
 
   const loadData = (id) => {
-    workSpaceAPI.getById(id).then((result) => {
+    workSpaceAPI.getByID(id).then((result) => {
       setWorkSpace(result.data[0]);
-      setMember(result.data[0].userIDs.length);
+      setMember(result.data[0].member.length);
     });
   };
 
@@ -45,16 +44,12 @@ const Detail = () => {
     setOpenWS(true);
   };
 
-  const handleCloseWS = () => {
-    setOpenWS(false);
-    loadData(workSpaceId);
-  };
-
   const handleCreateB = () => {
     setOpenB(true);
   };
 
-  const handleCloseB = () => {
+  const handleClose = () => {
+    setOpenWS(false);
     setOpenB(false);
   };
 
@@ -68,10 +63,10 @@ const Detail = () => {
     }).then((willDelete) => {
       if (willDelete) {
         workSpaceAPI
-          .deleteById(id)
+          .deleteByID(id)
           .then((res) => {
             if (res.status === 200) {
-              socket.workspace(res.data);
+              socket.emit('workspace', res.data);
 
               //Thông báo thành công
               swal({
@@ -80,7 +75,8 @@ const Detail = () => {
                 timer: 2000,
                 icon: 'success',
               });
-              navigate(`/u/default`, { replace: true });
+
+              navigate(`/`, { replace: true });
             }
           })
           .catch(() => {
@@ -99,11 +95,7 @@ const Detail = () => {
   useEffect(() => {
     loadData(workSpaceId);
 
-    socketClient.on('edit_workspace', (data) => {
-      setWorkSpace(data);
-    });
-
-    socketClient.on('delete_board', () => {
+    socket.on('workspace', () => {
       loadData(workSpaceId);
     });
   }, [workSpaceId]);
@@ -112,13 +104,17 @@ const Detail = () => {
     <>
       <Grid container justifyContent="space-between" alignItems="center" sx={{ px: 16, py: 6 }}>
         <Grid item display="flex" alignItems="center">
-          {workspace.logo === '' ? (
-            <BackgroundLetterAvatars name={workspace.name} h={80} w={80} f={50} />
-          ) : (
-            <Avatar src={workspace.logo} variant="rounded" sx={{ height: 80, width: 80 }} />
+          {workspace.logo && (
+            <>
+              {workspace.logo.data === '' ? (
+                <BackgroundLetterAvatars name={workspace.name} h={80} w={80} f={50} />
+              ) : (
+                <Avatar src={workspace.logo.data} variant="rounded" sx={{ height: 80, width: 80 }} />
+              )}
+            </>
           )}
 
-          <Typography variant="h1" sx={{ ml: 2 }}>
+          <Typography variant="h1" sx={{ width: 300, ml: 2, overflow: 'hidden', wordBreak: 'break-word' }}>
             {workspace.name}
           </Typography>
         </Grid>
@@ -151,10 +147,6 @@ const Detail = () => {
         </Grid>
       </Grid>
 
-      <WSForm open={openWS} onClose={handleCloseWS} formData={workspace} dialogForm={1} />
-
-      <BForm open={openB} onClose={handleCloseB} wsId={workSpaceId} dialogForm={0} />
-
       <MainCard sx={{ height: '100%' }}>
         <Typography variant="h2" sx={{ mb: 4, fontWeight: 500 }}>
           Your Boards
@@ -175,6 +167,10 @@ const Detail = () => {
           <BoardList id={workSpaceId} />
         </Grid>
       </MainCard>
+
+      <WSForm open={openWS} onClose={handleClose} formData={workspace} dialogForm={1} />
+
+      <BForm open={openB} onClose={handleClose} wsId={workSpaceId} dialogForm={0} />
     </>
   );
 };

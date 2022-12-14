@@ -32,10 +32,11 @@ import UserAPI from 'services/UserAPI';
 // icons
 import { IconId, IconLogout, IconSettings, IconUser } from '@tabler/icons';
 import io from 'socket.io-client';
+import { host } from 'services/baseAPI';
 
 // ==============================|| PROFILE MENU ||============================== //
 const userAPI = new UserAPI();
-const socketClient = io.connect('http://localhost:3002');
+const socket = io(host);
 
 const ProfileSection = () => {
   const theme = useTheme();
@@ -45,7 +46,10 @@ const ProfileSection = () => {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState({
-    avatar: '',
+    avatar: {
+      name: '',
+      data: '',
+    },
     name: '',
     email: '',
   });
@@ -88,17 +92,15 @@ const ProfileSection = () => {
     }
 
     prevOpen.current = open;
-  }, [open]);
 
-  useEffect(() => {
-    userAPI.getById(userId).then((res) => {
+    userAPI.getByID(userId).then((res) => {
       setUser(res.data[0]);
     });
 
-    socketClient.on('edit_user', (data) => {
+    socket.on('user', (data) => {
       setUser(data);
     });
-  }, [userId]);
+  }, [open, userId]);
 
   return (
     <>
@@ -124,7 +126,7 @@ const ProfileSection = () => {
         }}
         icon={
           <Avatar
-            src={user.avatar}
+            src={user.avatar.data}
             sx={{
               ...theme.typography.mediumAvatar,
               margin: '8px 0 8px 8px !important',

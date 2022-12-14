@@ -1,13 +1,9 @@
 import axios from 'axios';
+import { BaseAPI } from './baseAPI';
 
-// const API_URL = 'https://x-career-06-team1-be.as.r.appspot.com/api';
-const API_URL = 'http://localhost:3002/api';
-
-export default class TaskAPI {
+export default class TaskAPI extends BaseAPI {
   constructor() {
-    this.api = API_URL;
-
-    this.endpoint = 'tasks';
+    super({ endpoint: 'api/tasks' });
   }
 
   createNew = async (data) => {
@@ -32,33 +28,13 @@ export default class TaskAPI {
     return res;
   };
 
-  getById = async (id) => {
-    const res = await axios({
-      method: 'GET',
-      url: `${this.api}/${this.endpoint}/getTaskById?id=${id}`,
-      data: null,
-    });
-
-    return res;
-  };
-
-  updateById = async (id, data) => {
+  updateByID = async (id, data) => {
     const res = await axios({
       method: 'PUT',
-      url: `${this.api}/${this.endpoint}/updateTaskById?id=${id}`,
+      url: `${this.api}/${this.endpoint}/updateTaskByID?id=${id}`,
       data: {
         task: data,
       },
-    });
-
-    return res;
-  };
-
-  deleteById = async (id) => {
-    const res = await axios({
-      method: 'DELETE',
-      url: `${this.api}/${this.endpoint}/deleteTaskById?id=${id}`,
-      data: null,
     });
 
     return res;

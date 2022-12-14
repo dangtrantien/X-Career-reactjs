@@ -1,14 +1,11 @@
 import axios from 'axios';
+import { BaseAPI } from './baseAPI';
 
-// const API_URL = 'https://x-career-06-team1-be.as.r.appspot.com/api';
-const API_URL = 'http://localhost:3002/api';
 const token = sessionStorage.getItem('token');
 
-export default class BoardAPI {
+export default class BoardAPI extends BaseAPI {
   constructor() {
-    this.api = API_URL;
-
-    this.endpoint = 'boards';
+    super({ endpoint: 'api/boards' });
   }
 
   createNew = async (data) => {
@@ -36,33 +33,13 @@ export default class BoardAPI {
     return res;
   };
 
-  getById = async (id) => {
-    const res = await axios({
-      method: 'GET',
-      url: `${this.api}/${this.endpoint}/getBoardByID?id=${id}`,
-      data: null,
-    });
-
-    return res;
-  };
-
-  updateById = async (id, data) => {
+  updateByID = async (id, data) => {
     const res = await axios({
       method: 'PUT',
-      url: `${this.api}/${this.endpoint}/updateBoardById?id=${id}`,
+      url: `${this.api}/${this.endpoint}/updateBoardByID?id=${id}`,
       data: {
         board: data,
       },
-    });
-
-    return res;
-  };
-
-  deleteById = async (id) => {
-    const res = await axios({
-      method: 'DELETE',
-      url: `${this.api}/${this.endpoint}/deleteBoardById?id=${id}`,
-      data: null,
     });
 
     return res;

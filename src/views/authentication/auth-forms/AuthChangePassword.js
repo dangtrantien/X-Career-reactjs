@@ -68,7 +68,7 @@ const AuthChangePassword = ({ ...others }) => {
 
   useEffect(() => {
     handleChangePassword('');
-    userAPI.getById(userId).then((res) => {
+    userAPI.getByID(userId).then((res) => {
       setUserPassword(res.data[0].passwordHash);
     });
   }, [userId]);
@@ -116,7 +116,7 @@ const AuthChangePassword = ({ ...others }) => {
                 });
               } else {
                 userAPI
-                  .updateById(userId, user)
+                  .updateByID(userId, user)
                   .then((res) => {
                     if (res.status === 200) {
                       //Thông báo thành công

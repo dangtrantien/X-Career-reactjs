@@ -10,25 +10,29 @@ import WorkSpaceAPI from 'services/WorkSpaceAPI';
 import BoardList from './BoardList';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
+import WSForm from 'views/workspace/WorkSpaceForm';
 import io from 'socket.io-client';
+import { host } from 'services/baseAPI';
 
 // ==============================|| DEFAULT DASHBOARD ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
-const socketClient = io.connect('http://localhost:3002');
+const socket = io(host);
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const userId = sessionStorage.getItem('id');
+
   const [workspace, setWorkSpace] = useState([]);
 
-  const userId = sessionStorage.getItem('id');
+  const [openWS, setOpenWS] = useState(false);
 
   const loadData = (id) => {
     workSpaceAPI.getAll().then((result) => {
       const ws = [];
 
       result.data.data.map((res) => {
-        if (res.userIDs) {
-          res.userIDs.map((value) => {
+        if (res.member) {
+          res.member.map((value) => {
             if (value._id === id) {
               ws.push(res);
             }
@@ -39,29 +43,19 @@ const Dashboard = () => {
     });
   };
 
+  const handleCreateWS = () => {
+    setOpenWS(true);
+  };
+
+  const handleCloseWS = () => {
+    setOpenWS(false);
+  };
+
   useEffect(() => {
     loadData(userId);
 
-    socketClient.on('edit_workspace', (data) => {
-      workSpaceAPI.getAll().then((result) => {
-        const ws = [];
-
-        result.data.data.map((res) => {
-          if (data._id === res._id) {
-            res = data;
-          }
-
-          if (res.userIDs) {
-            res.userIDs.map((value) => {
-              if (value === userId) {
-                ws.push(res);
-              }
-            });
-          }
-        });
-
-        setWorkSpace(ws);
-      });
+    socket.on('workspace', () => {
+      loadData(userId);
     });
   }, [userId]);
 
@@ -72,44 +66,62 @@ const Dashboard = () => {
       </Typography>
 
       <MainCard sx={{ height: '100%' }}>
-        <Stack spacing={2}>
-          {workspace.map((value) => (
-            <>
-              <Stack spacing={2} key={value._id} sx={{ mb: 4 }}>
-                <Grid item display="flex" justifyContent="space-between" alignItems="center">
-                  <Grid container alignItems="center">
-                    {value.logo === '' ? (
-                      <BackgroundLetterAvatars name={value.name} h={50} w={50} f={30} />
-                    ) : (
-                      <Avatar src={value.logo} variant="rounded" />
-                    )}
+        {workspace.length === 0 ? (
+          <Grid container alignItems="center">
+            <Typography variant="h4" sx={{ mr: 1 }}>
+              You are not a member of any workspace.
+            </Typography>
 
-                    <Typography variant="h2" sx={{ ml: 1, fontWeight: 500 }}>
-                      {value.name}
-                    </Typography>
+            <Typography
+              variant="subtitle1"
+              sx={{ cursor: 'pointer', textDecoration: 'underline', '&:hover': { color: '#90CAF9' } }}
+              onClick={handleCreateWS}
+            >
+              Create a Workspace
+            </Typography>
+          </Grid>
+        ) : (
+          <Stack spacing={2}>
+            {workspace.map((value) => (
+              <div key={value._id}>
+                <Stack spacing={2} sx={{ mb: 4 }}>
+                  <Grid item display="flex" justifyContent="space-between" alignItems="center">
+                    <Grid container alignItems="center">
+                      {value.logo.data === '' ? (
+                        <BackgroundLetterAvatars name={value.name} h={50} w={50} f={30} />
+                      ) : (
+                        <Avatar src={value.logo.data} variant="rounded" />
+                      )}
+
+                      <Typography variant="h2" sx={{ ml: 1, fontWeight: 500 }}>
+                        {value.name}
+                      </Typography>
+                    </Grid>
+
+                    <AnimateButton>
+                      <Button
+                        disableElevation
+                        onClick={() => navigate(`/w/detail/${value._id}`, { replace: true })}
+                        variant="contained"
+                        color="primary"
+                      >
+                        Detail
+                      </Button>
+                    </AnimateButton>
                   </Grid>
 
-                  <AnimateButton>
-                    <Button
-                      disableElevation
-                      onClick={() => navigate(`/w/detail/${value._id}`, { replace: true })}
-                      variant="contained"
-                      color="primary"
-                    >
-                      Detail
-                    </Button>
-                  </AnimateButton>
-                </Grid>
-
-                <Grid container spacing={2}>
-                  <BoardList id={value._id} />
-                </Grid>
-              </Stack>
-              <Divider />
-            </>
-          ))}
-        </Stack>
+                  <Grid container spacing={2}>
+                    <BoardList id={value._id} />
+                  </Grid>
+                </Stack>
+                <Divider />
+              </div>
+            ))}
+          </Stack>
+        )}
       </MainCard>
+
+      <WSForm open={openWS} onClose={handleCloseWS} dialogForm={0} />
     </>
   );
 };

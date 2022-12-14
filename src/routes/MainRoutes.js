@@ -22,6 +22,10 @@ const DashboardRoutes = {
   ),
   children: [
     {
+      path: '/',
+      element: <DashboardDefault />,
+    },
+    {
       path: 'u',
       children: [
         {

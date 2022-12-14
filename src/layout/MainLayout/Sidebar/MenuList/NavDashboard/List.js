@@ -11,10 +11,11 @@ import NavDashboardItem from './Item';
 import WorkSpaceAPI from 'services/WorkSpaceAPI';
 import WSForm from 'views/workspace/WorkSpaceForm';
 import io from 'socket.io-client';
+import { host } from 'services/baseAPI';
 
 // ==============================|| SIDEBAR DASHBOARD LIST ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
-const socketClient = io.connect('http://localhost:3002');
+const socket = io(host);
 
 const DashboardList = () => {
   const [openWS, setOpenWS] = useState(false);
@@ -36,8 +37,8 @@ const DashboardList = () => {
       const ws = [];
 
       result.data.data.map((res) => {
-        if (res.userIDs) {
-          res.userIDs.map((value) => {
+        if (res.member) {
+          res.member.map((value) => {
             if (value._id === id) {
               ws.push(res);
             }
@@ -52,29 +53,7 @@ const DashboardList = () => {
   useEffect(() => {
     loadData(userId);
 
-    socketClient.on('edit_workspace', (data) => {
-      workSpaceAPI.getAll().then((result) => {
-        const ws = [];
-
-        result.data.data.map((res) => {
-          if (data._id === res._id) {
-            res = data;
-          }
-
-          if (res.userIDs) {
-            res.userIDs.map((value) => {
-              if (value === userId) {
-                ws.push(res);
-              }
-            });
-          }
-        });
-
-        setWorkSpace(ws);
-      });
-    });
-
-    socketClient.on('delete_workspace', () => {
+    socket.on('workspace', () => {
       loadData(userId);
     });
   }, [userId]);
@@ -92,11 +71,11 @@ const DashboardList = () => {
       </Grid>
       <Divider sx={{ borderBottom: '1px solid', mb: 2 }} />
 
-      <WSForm open={openWS} onClose={handleCloseWS} dialogForm={0} />
-
       {workspace.map((item) => (
         <NavDashboardItem key={item._id} item={item} />
       ))}
+
+      <WSForm open={openWS} onClose={handleCloseWS} dialogForm={0} />
     </>
   );
 };

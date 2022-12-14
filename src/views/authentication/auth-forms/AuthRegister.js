@@ -270,7 +270,7 @@ const AuthRegister = ({ ...others }) => {
             </form>
           )}
         </Formik>
-
+        {/* 
         <Grid item xs={12}>
           <Box sx={{ alignItems: 'center', display: 'flex' }}>
             <Divider sx={{ flexGrow: 1 }} orientation="horizontal" />
@@ -314,7 +314,7 @@ const AuthRegister = ({ ...others }) => {
               Sign up with Google
             </Button>
           </AnimateButton>
-        </Grid>
+        </Grid> */}
       </Grid>
     </>
   );

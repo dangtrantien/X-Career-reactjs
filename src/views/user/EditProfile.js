@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 
 // material-ui
@@ -17,17 +18,17 @@ import {
 } from '@mui/material';
 
 // project import
-import PropTypes from 'prop-types';
 import swal from 'sweetalert';
 import UserAPI from 'services/UserAPI';
 import InputFileButton from 'ui-component/extended/InputFileButton';
 import EndcodeFileBase64 from 'utils/endcodeFileBase64';
 import AnimateButton from 'ui-component/extended/AnimateButton';
-import SocketIo from 'utils/socket.io';
+import io from 'socket.io-client';
+import { host } from 'services/baseAPI';
 
 // ==============================|| EDIT USER PROFILE PAGE ||============================== //
 const userAPI = new UserAPI();
-const socket = new SocketIo();
+const socket = io(host);
 
 const EditProfile = (props) => {
   const { open, onClose, formData } = props;
@@ -60,14 +61,14 @@ const EditProfile = (props) => {
       const base64 = await EndcodeFileBase64(data.get('avatar'));
 
       //Kiểm tra có đúng là image hay không
-      if (base64.match(/[^:/]\w+\//)[0] === 'image/') {
+      if (base64.type.match(/[^:/]\w+\//)[0] === 'image/') {
         editUser.avatar = base64;
 
         userAPI
-          .updateById(user._id, editUser)
+          .updateByID(user._id, editUser)
           .then((res) => {
             if (res.data.success === true) {
-              socket.user(res.data.data);
+              socket.emit('user', res.data.data);
 
               swal({
                 text: 'Successfully updated profile.',
@@ -98,10 +99,10 @@ const EditProfile = (props) => {
       }
     } else {
       userAPI
-        .updateById(user._id, editUser)
+        .updateByID(user._id, editUser)
         .then((res) => {
           if (res.data.success === true) {
-            socket.user(editUser);
+            socket.emit('user', res.data.data);
 
             swal({
               text: 'Successfully updated profile.',
@@ -131,7 +132,7 @@ const EditProfile = (props) => {
 
   return (
     <>
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={open} onClose={handleClose} scroll="body">
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <DialogTitle sx={{ textAlign: 'center' }} color="primary" variant="h2">
             Edit profile
@@ -144,7 +145,7 @@ const EditProfile = (props) => {
                 Avatar:
               </Typography>
 
-              <InputFileButton defaultValue={user.avatar} name="avatar" type="image" />
+              <InputFileButton defaultValue={user.avatar.data} name="avatar" />
             </Grid>
 
             <Grid container alignItems="center" sx={{ height: 70 }}>
