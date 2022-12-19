@@ -1,25 +1,25 @@
 import PropTypes from 'prop-types';
-import { useEffect, useState, createRef } from 'react';
+import { useEffect, useState } from 'react';
 
 // material-ui
-import { Button, Grid, Box, Avatar, GlobalStyles, IconButton, Typography, ButtonGroup } from '@mui/material';
+import { Grid, Avatar, Typography } from '@mui/material';
 
 // icons/img
-import { IconMoodSmile, IconPaperclip } from '@tabler/icons';
 
 // project imports
 import CommentAPI from 'services/CommentAPI';
-import AnimateButton from 'ui-component/extended/AnimateButton';
-import EndcodeFileBase64 from 'utils/endcodeFileBase64';
 import InputComment from './Input';
 import io from 'socket.io-client';
 import { host } from 'services/baseAPI';
 
 // ==============================|| COMMENT FORM ||============================== //
 const commentAPI = new CommentAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
-const CForm = ({ taskID }) => {
+const CForm = ({ taskID, fileComment }) => {
   const userId = sessionStorage.getItem('id');
 
   const [message, setMessage] = useState([]);
@@ -41,8 +41,6 @@ const CForm = ({ taskID }) => {
   const handleCloseEdit = () => {
     setEditMS(false);
   };
-
-  const handleReply = () => {};
 
   const handleDelete = (id) => {
     swal({
@@ -83,7 +81,7 @@ const CForm = ({ taskID }) => {
 
   return (
     <>
-      <InputComment taskId={taskID} />
+      <InputComment taskId={taskID} inputWidth={435} fileMessage={fileComment} />
 
       <Grid
         height={400}
@@ -126,61 +124,32 @@ const CForm = ({ taskID }) => {
                   <Typography variant="subtitle1">{createDate === updateDate ? createDate : `${updateDate} (fixed)`}</Typography>
                 </Grid>
 
-                {editMS === false ? (
+                {messageId === data._id && editMS === true ? (
+                  <InputComment
+                    taskId={taskID}
+                    onEdit={editMS}
+                    onClose={handleCloseEdit}
+                    editMessage={data.message}
+                    commentId={messageId}
+                    inputWidth={435}
+                  />
+                ) : (
                   <>
                     <Grid sx={{ width: 435, p: 1, borderRadius: 2, boxShadow: 4 }}>
                       <Typography variant="h4" sx={{ mr: 1 }}>
-                        {data.message}
+                        {data.message.url ? (
+                          <a href={data.message.url} target="_blank">
+                            {data.message.name}
+                          </a>
+                        ) : (
+                          <>{data.message}</>
+                        )}
                       </Typography>
                     </Grid>
 
-                    <Grid item display="flex" alignItems="center" sx={{ position: 'relative' }}>
-                      {data.senderID._id === userId ? (
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ mr: 1, cursor: 'pointer', textDecoration: 'underline', '&:hover': { color: '#90CAF9' } }}
-                          onClick={() => handleEdit(data._id)}
-                        >
-                          Edit
-                        </Typography>
-                      ) : (
-                        <Typography
-                          variant="subtitle1"
-                          sx={{ mr: 1, cursor: 'pointer', textDecoration: 'underline', '&:hover': { color: '#90CAF9' } }}
-                          onClick={handleReply}
-                        >
-                          Reply
-                        </Typography>
-                      )}
-
-                      <Typography
-                        variant="subtitle1"
-                        sx={{ cursor: 'pointer', textDecoration: 'underline', '&:hover': { color: '#90CAF9' } }}
-                        onClick={() => handleDelete(data._id)}
-                      >
-                        Delete
-                      </Typography>
-                    </Grid>
-                  </>
-                ) : (
-                  <>
-                    {messageId === data._id ? (
-                      <InputComment
-                        taskId={taskID}
-                        onEdit={editMS}
-                        onClose={handleCloseEdit}
-                        message={data.message}
-                        commentId={messageId}
-                      />
-                    ) : (
-                      <>
-                        <Grid sx={{ width: 450, p: 1, borderRadius: 2, boxShadow: 4 }}>
-                          <Typography variant="h4" sx={{ mr: 1 }}>
-                            {data.message}
-                          </Typography>
-                        </Grid>
-
-                        <Grid item display="flex" alignItems="center">
+                    <Grid item display="flex" alignItems="center">
+                      {!data.message.url && (
+                        <>
                           {data.senderID._id === userId ? (
                             <Typography
                               variant="subtitle1"
@@ -193,22 +162,21 @@ const CForm = ({ taskID }) => {
                             <Typography
                               variant="subtitle1"
                               sx={{ mr: 1, cursor: 'pointer', textDecoration: 'underline', '&:hover': { color: '#90CAF9' } }}
-                              onClick={handleReply}
                             >
                               Reply
                             </Typography>
                           )}
+                        </>
+                      )}
 
-                          <Typography
-                            variant="subtitle1"
-                            sx={{ cursor: 'pointer', textDecoration: 'underline', '&:hover': { color: '#90CAF9' } }}
-                            onClick={() => handleDelete(data._id)}
-                          >
-                            Delete
-                          </Typography>
-                        </Grid>
-                      </>
-                    )}
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ cursor: 'pointer', textDecoration: 'underline', '&:hover': { color: '#90CAF9' } }}
+                        onClick={() => handleDelete(data._id)}
+                      >
+                        Delete
+                      </Typography>
+                    </Grid>
                   </>
                 )}
               </Grid>
@@ -222,6 +190,7 @@ const CForm = ({ taskID }) => {
 
 CForm.propTypes = {
   taskID: PropTypes.any,
+  fileComment: PropTypes.any,
 };
 
 export default CForm;

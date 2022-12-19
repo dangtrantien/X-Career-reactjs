@@ -11,7 +11,6 @@ import {
   Chip,
   ClickAwayListener,
   Divider,
-  Grid,
   List,
   ListItemButton,
   ListItemIcon,
@@ -22,21 +21,22 @@ import {
   Typography,
 } from '@mui/material';
 
-// third-party
+// icons
+import { IconId, IconLogout, IconSettings } from '@tabler/icons';
 
 // project imports
 import MainCard from 'ui-component/cards/MainCard';
 import Transitions from 'ui-component/extended/Transitions';
 import UserAPI from 'services/UserAPI';
-
-// icons
-import { IconId, IconLogout, IconSettings, IconUser } from '@tabler/icons';
 import io from 'socket.io-client';
 import { host } from 'services/baseAPI';
 
 // ==============================|| PROFILE MENU ||============================== //
 const userAPI = new UserAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const ProfileSection = () => {
   const theme = useTheme();
@@ -45,14 +45,7 @@ const ProfileSection = () => {
 
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState({
-    avatar: {
-      name: '',
-      data: '',
-    },
-    name: '',
-    email: '',
-  });
+  const [user, setUser] = useState({});
   /**
    * anchorRef is used on different componets and specifying one type leads to other components throwing an error
    * */
@@ -126,7 +119,7 @@ const ProfileSection = () => {
         }}
         icon={
           <Avatar
-            src={user.avatar.data}
+            src={user.avatar && user.avatar.data}
             sx={{
               ...theme.typography.mediumAvatar,
               margin: '8px 0 8px 8px !important',
@@ -200,7 +193,7 @@ const ProfileSection = () => {
                     <ListItemButton
                       sx={{ borderRadius: `${customization.borderRadius}px` }}
                       selected={selectedIndex === 0}
-                      onClick={(event) => handleListItemClick(event, 0, '/u/profile')}
+                      onClick={(event) => handleListItemClick(event, 0, `/u/profile/${userId}`)}
                     >
                       <ListItemIcon>
                         <IconId stroke={1.5} size="1.3rem" />
@@ -217,35 +210,6 @@ const ProfileSection = () => {
                         <IconSettings stroke={1.5} size="1.3rem" />
                       </ListItemIcon>
                       <ListItemText primary={<Typography variant="body2">Change password</Typography>} />
-                    </ListItemButton>
-
-                    <ListItemButton
-                      sx={{ borderRadius: `${customization.borderRadius}px` }}
-                      selected={selectedIndex === 2}
-                      onClick={(event) => handleListItemClick(event, 2, '#')}
-                    >
-                      <ListItemIcon>
-                        <IconUser stroke={1.5} size="1.3rem" />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={
-                          <Grid container spacing={1} justifyContent="space-between">
-                            <Grid item>
-                              <Typography variant="body2">Social Profile</Typography>
-                            </Grid>
-                            <Grid item>
-                              <Chip
-                                label="02"
-                                size="small"
-                                sx={{
-                                  bgcolor: theme.palette.warning.dark,
-                                  color: theme.palette.background.default,
-                                }}
-                              />
-                            </Grid>
-                          </Grid>
-                        }
-                      />
                     </ListItemButton>
 
                     <ListItemButton sx={{ borderRadius: `${customization.borderRadius}px` }} onClick={handleLogout}>

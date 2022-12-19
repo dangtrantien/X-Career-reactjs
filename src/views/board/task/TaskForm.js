@@ -12,7 +12,6 @@ import { Button, OutlinedInput, Typography, Grid, Dialog, Box, DialogContent, Me
 import {
   IconAlignJustified,
   IconCreditCard,
-  IconListDetails,
   IconPaperclip,
   IconUser,
   IconUsers,
@@ -25,18 +24,23 @@ import {
 import swal from 'sweetalert';
 import TaskAPI from 'services/TaskAPI';
 import BoardAPI from 'services/BoardAPI';
+import UploadAPI from 'services/UploadAPI';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import DialogForm from 'ui-component/extended/DialogForm';
 import AutocompleteBtn from 'ui-component/extended/AutocompleteBtn';
-import CForm from './comment/CommentForm';
 import io from 'socket.io-client';
 import { host } from 'services/baseAPI';
 import FileUpload from './FileUpload';
+import MoveTaskBtn from 'ui-component/MenuButton/MoveTaskBtn';
 
 // ==============================|| BOARD FORM ||============================== //
 const taskAPI = new TaskAPI();
 const boardAPI = new BoardAPI();
-const socket = io(host);
+const uploadAPI = new UploadAPI();
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const TForm = (props) => {
   const { open, onClose, formData, bId, status, dialogForm } = props;
@@ -55,6 +59,9 @@ const TForm = (props) => {
   const [showMember, setShowMember] = useState(false);
   const [showAttach, setShowAttach] = useState(false);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMoveTask = Boolean(anchorEl);
+
   const handleClose = () => {
     onClose(!open);
   };
@@ -67,6 +74,14 @@ const TForm = (props) => {
   const handleShowAttach = (id) => {
     setShow(id);
     setShowAttach(!showAttach);
+  };
+
+  const handleMoveTask = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMoveTask = () => {
+    setAnchorEl(null);
   };
 
   const handleChange = (event) => {
@@ -163,7 +178,6 @@ const TForm = (props) => {
       setTask(formData);
       setStatus(formData.status);
       setDescribe(formData.describe);
-      setTMember(formData.member);
 
       if (bId !== undefined) {
         boardAPI.getByID(bId).then((result) => {
@@ -171,8 +185,25 @@ const TForm = (props) => {
         });
       }
 
-      socket.on('upload', () => {
-        setShowAttach(true);
+      if (formData.member.length !== 0) {
+        setTMember(formData.member);
+        setShow(formData._id);
+        setShowMember(true);
+      }
+
+      uploadAPI.getFromTask().then((result) => {
+        const arr = [];
+
+        result.data.data.map((res) => {
+          if (res.taskID._id === formData._id) {
+            arr.push(res);
+          }
+        });
+
+        if (arr.length !== 0) {
+          setShow(formData._id);
+          setShowAttach(true);
+        }
       });
     }
   }, [dialogForm, formData, bId, status]);
@@ -226,7 +257,7 @@ const TForm = (props) => {
                   <textarea id="task" className="task-title" value={task.task} name="task" onChange={handleChange} />
                 </Grid>
 
-                {showMember && show === task._id && (
+                {show === task._id && showMember && (
                   <Grid>
                     <Grid container alignItems="center" sx={{ mt: 2, mb: 1 }}>
                       <IconUsers />
@@ -236,7 +267,7 @@ const TForm = (props) => {
                       </Typography>
                     </Grid>
 
-                    <Grid sx={{ paddingLeft: 4 }}>
+                    <Grid sx={{ pl: 4, pr: 2 }}>
                       <AutocompleteBtn options={BMember} member={TMember} handleChange={handleMemberChange} />
                     </Grid>
                   </Grid>
@@ -277,8 +308,8 @@ const TForm = (props) => {
                   </Grid>
                 </Grid>
 
-                {showAttach && show === task._id && (
-                  <Grid>
+                <Grid>
+                  {show === task._id && showAttach && (
                     <Grid container alignItems="center" sx={{ mt: 4 }}>
                       <IconPaperclip />
 
@@ -286,21 +317,9 @@ const TForm = (props) => {
                         Attachments:
                       </Typography>
                     </Grid>
+                  )}
 
-                    <FileUpload taskID={task._id} />
-                  </Grid>
-                )}
-
-                <Grid>
-                  <Grid container alignItems="center" sx={{ mt: 4 }}>
-                    <IconListDetails />
-
-                    <Typography sx={{ ml: 1 }} color="primary" variant="h5">
-                      Work:
-                    </Typography>
-                  </Grid>
-
-                  <CForm taskID={task._id} />
+                  <FileUpload taskID={task._id} show={showAttach} />
                 </Grid>
               </Grid>
 
@@ -334,12 +353,13 @@ const TForm = (props) => {
                   Manipulation
                 </Typography>
 
-                <MenuItem sx={{ mb: 2, boxShadow: 2 }}>
+                <MenuItem sx={{ mb: 2, boxShadow: 2 }} onClick={handleMoveTask}>
                   <Grid sx={{ mr: 1 }}>
                     <IconArrowBigRightLines size={16} />
                   </Grid>
                   Move
                 </MenuItem>
+                <MoveTaskBtn task={task} anchorEl={anchorEl} open={openMoveTask} handleClose={handleCloseMoveTask} />
 
                 <MenuItem sx={{ mb: 2, boxShadow: 2 }}>
                   <Grid sx={{ mr: 1 }}>

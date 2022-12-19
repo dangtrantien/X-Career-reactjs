@@ -20,11 +20,14 @@ import { host } from 'services/baseAPI';
 // ==============================|| SIDEBAR BOARD LIST ||============================== //
 const boardAPI = new BoardAPI();
 const workSpaceAPI = new WorkSpaceAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const BoardList = () => {
-  const navigate = useNavigate();
   const { boardId } = useParams();
+  const navigate = useNavigate();
   const userId = sessionStorage.getItem('id');
 
   const [openB, setOpenB] = useState(false);
@@ -95,7 +98,7 @@ const BoardList = () => {
             </>
           )}
 
-          <Typography variant="h3" fontWeight={500} sx={{ ml: 2, overflow: 'hidden', wordBreak: 'break-word' }}>
+          <Typography variant="h3" fontWeight={500} sx={{ ml: 2 }}>
             {workspace.name}
           </Typography>
         </Grid>

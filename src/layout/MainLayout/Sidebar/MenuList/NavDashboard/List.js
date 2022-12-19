@@ -15,7 +15,10 @@ import { host } from 'services/baseAPI';
 
 // ==============================|| SIDEBAR DASHBOARD LIST ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const DashboardList = () => {
   const [openWS, setOpenWS] = useState(false);
@@ -37,13 +40,11 @@ const DashboardList = () => {
       const ws = [];
 
       result.data.data.map((res) => {
-        if (res.member) {
-          res.member.map((value) => {
-            if (value._id === id) {
-              ws.push(res);
-            }
-          });
-        }
+        res.member.map((value) => {
+          if (value._id === id) {
+            ws.push(res);
+          }
+        });
       });
 
       setWorkSpace(ws);

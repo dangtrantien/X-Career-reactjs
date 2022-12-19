@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,9 +17,12 @@ import { host } from 'services/baseAPI';
 
 // ==============================|| DEFAULT DASHBOARD ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
-const Dashboard = () => {
+const Dashboard = ({ page }) => {
   const navigate = useNavigate();
   const userId = sessionStorage.getItem('id');
 
@@ -28,18 +32,17 @@ const Dashboard = () => {
 
   const loadData = (id) => {
     workSpaceAPI.getAll().then((result) => {
-      const ws = [];
+      let arr = [];
 
       result.data.data.map((res) => {
-        if (res.member) {
-          res.member.map((value) => {
-            if (value._id === id) {
-              ws.push(res);
-            }
-          });
-        }
+        res.member.map((value) => {
+          if (value._id === id) {
+            arr.push(res);
+          }
+        });
       });
-      setWorkSpace(ws);
+
+      setWorkSpace(arr);
     });
   };
 
@@ -101,6 +104,7 @@ const Dashboard = () => {
                     <AnimateButton>
                       <Button
                         disableElevation
+                        sx={{ width: 100 }}
                         onClick={() => navigate(`/w/detail/${value._id}`, { replace: true })}
                         variant="contained"
                         color="primary"
@@ -111,7 +115,7 @@ const Dashboard = () => {
                   </Grid>
 
                   <Grid container spacing={2}>
-                    <BoardList id={value._id} />
+                    <BoardList id={value._id} page={page} />
                   </Grid>
                 </Stack>
                 <Divider />
@@ -124,6 +128,10 @@ const Dashboard = () => {
       <WSForm open={openWS} onClose={handleCloseWS} dialogForm={0} />
     </>
   );
+};
+
+Dashboard.propTypes = {
+  page: PropTypes.any,
 };
 
 export default Dashboard;

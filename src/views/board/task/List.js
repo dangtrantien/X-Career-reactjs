@@ -16,7 +16,10 @@ import { host } from 'services/baseAPI';
 
 // ==============================|| TASK LIST ||============================== //
 const taskAPI = new TaskAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const TaskList = ({ list, item, bId }) => {
   const [openT, setOpenT] = useState(false);
@@ -30,28 +33,26 @@ const TaskList = ({ list, item, bId }) => {
 
     taskAPI.getAll().then((result) => {
       result.data.data.map((res) => {
-        if (res.boardID._id === bId) {
-          if (res._id === id) {
-            const task = {
-              status: index,
-            };
+        if (res._id === id) {
+          const task = {
+            status: index,
+          };
 
-            taskAPI
-              .updateByID(res._id, task)
-              .then((res) => {
-                if (res.data.success === true) {
-                  socket.emit('task', res.data.data);
-                }
-              })
-              .catch(() => {
-                swal({
-                  text: 'Sorry, something went wrong. Please contact to admin for support.',
-                  buttons: false,
-                  timer: 5000,
-                  icon: 'error',
-                });
+          taskAPI
+            .updateByID(res._id, task)
+            .then((res) => {
+              if (res.data.success === true) {
+                socket.emit('task', res.data.data);
+              }
+            })
+            .catch(() => {
+              swal({
+                text: 'Sorry, something went wrong. Please contact to admin for support.',
+                buttons: false,
+                timer: 5000,
+                icon: 'error',
               });
-          }
+            });
         }
       });
     });
@@ -64,6 +65,7 @@ const TaskList = ({ list, item, bId }) => {
   const handleClose = () => {
     setOpenT(false);
   };
+
   return (
     <>
       <Card
@@ -113,8 +115,12 @@ const TaskList = ({ list, item, bId }) => {
           ))}
         </Grid>
 
-        <Button variant="contained" sx={{ mx: 1, my: 2, borderRadius: 2, height: 40, width: 212 }} onClick={handleCreateT}>
-          <IconPlus />
+        <Button
+          variant="contained"
+          sx={{ mx: 1, my: 2, borderRadius: 2, height: 40, width: 212 }}
+          onClick={handleCreateT}
+          startIcon={<IconPlus size={20} />}
+        >
           Add task
         </Button>
       </Card>

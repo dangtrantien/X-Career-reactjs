@@ -22,7 +22,10 @@ import { host } from 'services/baseAPI';
 // ==============================|| BOARD FORM ||============================== //
 const boardAPI = new BoardAPI();
 const workSpaceAPI = new WorkSpaceAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const BForm = (props) => {
   const { open, onClose, formData, wsId, dialogForm } = props;
@@ -182,13 +185,11 @@ const BForm = (props) => {
       const ws = [];
 
       result.data.data.map((res) => {
-        if (res.member) {
-          res.member.map((value) => {
-            if (value._id === userId) {
-              ws.push(res);
-            }
-          });
-        }
+        res.member.map((value) => {
+          if (value._id === userId) {
+            ws.push(res);
+          }
+        });
       });
 
       setWorkSpace(ws);
@@ -220,7 +221,7 @@ const BForm = (props) => {
   return (
     <Dialog open={open} onClose={handleClose} scroll="body">
       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-        <DialogForm value={dialogForm} index={0}>
+        <DialogForm value={dialogForm} index={0} width={400}>
           <DialogTitle display="flex" justifyContent="center" sx={{ fontSize: 20, fontWeight: 700 }}>
             Create Table
           </DialogTitle>
@@ -232,20 +233,35 @@ const BForm = (props) => {
               <OutlinedInput id="_id" name="_id" value={board._id} onChange={handleChange} variant="standard" />
             </Grid>
 
-            <Grid container alignItems="center" sx={{ height: 70 }}>
-              <Typography sx={{ mr: 6 }} color="primary" variant="h5">
+            <Grid container justifyContent="space-between" alignItems="center" sx={{ height: 70 }}>
+              <Typography color="primary" variant="h5">
                 Table title:
               </Typography>
 
-              <OutlinedInput id="name" type="text" value={board.name} name="name" onChange={handleChange} placeholder="Enter table title" />
+              <OutlinedInput
+                sx={{ width: 2 / 3 }}
+                id="name"
+                type="text"
+                value={board.name}
+                name="name"
+                onChange={handleChange}
+                placeholder="Enter table title"
+              />
             </Grid>
 
-            <Grid container alignItems="center" sx={{ height: 70 }}>
-              <Typography sx={{ mr: 2 }} color="primary" variant="h5">
+            <Grid container justifyContent="space-between" alignItems="center" sx={{ height: 70 }}>
+              <Typography color="primary" variant="h5">
                 Working space:
               </Typography>
 
-              <Select native id="workSpaceID" value={WSId} onChange={handleWSChange} inputProps={{ 'aria-label': 'Working space' }}>
+              <Select
+                sx={{ width: 2 / 3 }}
+                native
+                id="workSpaceID"
+                value={WSId}
+                onChange={handleWSChange}
+                inputProps={{ 'aria-label': 'Working space' }}
+              >
                 {workSpace.map((data) => (
                   <option key={data._id} value={data._id}>
                     {data.name}
@@ -256,7 +272,7 @@ const BForm = (props) => {
           </DialogContent>
         </DialogForm>
 
-        <DialogForm value={dialogForm} index={1}>
+        <DialogForm value={dialogForm} index={1} width={500}>
           <DialogTitle display="flex" justifyContent="center" sx={{ fontSize: 20, fontWeight: 700 }}>
             Edit Table
           </DialogTitle>
@@ -269,19 +285,27 @@ const BForm = (props) => {
             </Grid>
 
             <Grid container alignItems="center">
-              <Typography sx={{ mr: 4 }} color="primary" variant="h5">
+              <Typography sx={{ mr: 12 }} color="primary" variant="h5">
                 Background:
               </Typography>
 
-              {board.bgImg && <InputFileButton defaultValue={board.bgImg.data} name="bgImg" />}
+              <InputFileButton defaultValue={board.bgImg && board.bgImg.data} name="bgImg" />
             </Grid>
 
-            <Grid container alignItems="center" sx={{ height: 70 }}>
-              <Typography sx={{ mr: 6 }} color="primary" variant="h5">
+            <Grid container justifyContent="space-between" alignItems="center" sx={{ height: 70 }}>
+              <Typography color="primary" variant="h5">
                 Table title:
               </Typography>
 
-              <OutlinedInput id="name" type="text" value={board.name} name="name" onChange={handleChange} placeholder="Enter table title" />
+              <OutlinedInput
+                sx={{ width: 2 / 3 }}
+                id="name"
+                type="text"
+                value={board.name}
+                name="name"
+                onChange={handleChange}
+                placeholder="Enter table title"
+              />
             </Grid>
 
             <Grid>
@@ -295,7 +319,7 @@ const BForm = (props) => {
         </DialogForm>
 
         <Grid container alignItems="center" justifyContent="space-around" sx={{ my: 2 }}>
-          <AnimateButton sx={{ mr: 4 }}>
+          <AnimateButton>
             <Button disableElevation size="large" onClick={handleClose} variant="contained" color="secondary">
               Cancel
             </Button>

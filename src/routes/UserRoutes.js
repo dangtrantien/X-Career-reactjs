@@ -21,7 +21,7 @@ const UserRoutes = {
   ),
   children: [
     {
-      path: '/u/profile',
+      path: '/u/profile/:userId',
       element: <Profile />,
     },
     {

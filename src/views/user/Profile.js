@@ -1,46 +1,55 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 
 // material-ui
-import { Avatar, Button, Typography, Divider, Grid, Stack } from '@mui/material';
+import { Avatar, Button, Typography, Grid, ButtonGroup } from '@mui/material';
 
 // project import
 import UserAPI from 'services/UserAPI';
-import AnimateButton from 'ui-component/extended/AnimateButton';
 import EditProfile from './EditProfile';
+import PersonalInfo from './PersonalInfomation';
+import Work from './Work';
 import io from 'socket.io-client';
 import { host } from 'services/baseAPI';
 
 // ==============================|| USER PROFILE PAGE ||============================== //
 const userAPI = new UserAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const Profile = () => {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [user, setUser] = useState({
-    name: '',
-    email: '',
-    avatar: {
-      name: '',
-      data: '',
-    },
-    gender: '',
-    group: '',
-    position: '',
-    address: '',
-  });
+  const { userId } = useParams();
+  const userID = sessionStorage.getItem('id');
 
-  const userId = sessionStorage.getItem('id');
+  const [user, setUser] = useState({});
+
+  const [show, setShow] = useState(true);
+  const [edit, setEdit] = useState(false);
 
   const loadData = (id) => {
     userAPI.getByID(id).then((res) => setUser(res.data[0]));
+
+    if (userId !== userID) {
+      setShow(false);
+    }
   };
 
-  const handleOpenDialog = () => {
-    setOpenDialog(true);
+  const handleInfo = () => {
+    setShow(true);
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+  const handleWork = () => {
+    setShow(false);
+  };
+
+  const handleEdit = () => {
+    setEdit(true);
+  };
+
+  const handleClose = () => {
+    setEdit(false);
   };
 
   useEffect(() => {
@@ -52,104 +61,33 @@ const Profile = () => {
   }, [userId]);
 
   return (
-    <>
-      <Grid container width="100%">
-        <Grid
-          container
-          direction="column"
-          justifyContent="space-between"
-          alignItems="center"
-          sx={{ width: '100%', height: '50%', bgcolor: 'rgba(128, 128, 128, 0.1)' }}
-        >
-          <Grid container justifyContent="center" alignItems="center" sx={{ pt: 15 }}>
-            <Avatar alt="profile user" src={user.avatar.data} sx={{ height: 120, width: 120, mr: 2 }} />
+    <Grid>
+      <Grid container direction="column" alignItems="center" sx={{ bgcolor: 'rgba(128, 128, 128, 0.1)' }}>
+        <Grid container justifyContent="center" alignItems="center" sx={{ my: 5 }}>
+          <Avatar alt="profile user" src={user.avatar && user.avatar.data} sx={{ height: 120, width: 120, mr: 2 }} />
 
-            <Grid item sx={{ mr: 2 }}>
-              <Stack spacing={2}>
-                <Typography color="grey[900]" variant="h1">
-                  {user.name === undefined ? user.email : user.name}
-                </Typography>
-
-                <Typography variant="h5" color="secondary">
-                  ID: {userId}
-                </Typography>
-              </Stack>
-            </Grid>
-          </Grid>
-
-          <Grid container justifyContent="space-between" alignItems="center" sx={{ width: '100%', pt: 5, px: 50 }}>
-            <Typography color="primary" variant="h2">
-              Personal Information
-            </Typography>
-
-            <AnimateButton>
-              <Button disableElevation onClick={handleOpenDialog} variant="contained" color="primary">
-                Edit Profile
-              </Button>
-            </AnimateButton>
-          </Grid>
+          <Typography variant="h1">{user.name}</Typography>
         </Grid>
 
-        <EditProfile open={openDialog} onClose={handleCloseDialog} formData={user} />
+        <ButtonGroup variant="text" aria-label="text button group" sx={{ width: '100%', justifyContent: 'center' }}>
+          <Button disableElevation onClick={handleInfo}>
+            Personal Infomation
+          </Button>
 
-        <Grid item sx={{ width: '100%', mt: 5, px: 50 }}>
-          <Stack spacing={2} sx={{ mx: 10 }}>
-            <Grid container alignItems="center">
-              <Typography sx={{ mr: 2 }} color="primary" variant="h5">
-                Display name:
-              </Typography>
+          <Button disableElevation onClick={handleWork}>
+            Work
+          </Button>
 
-              <Typography variant="h5">{user.name === undefined ? user.email : user.name}</Typography>
-            </Grid>
-            <Divider sx={{ borderBottom: '1px solid' }} />
-
-            <Grid container alignItems="center">
-              <Typography sx={{ mr: 8 }} color="primary" variant="h5">
-                Email:
-              </Typography>
-
-              <Typography variant="h5">{user.email}</Typography>
-            </Grid>
-            <Divider sx={{ borderBottom: '1px solid' }} />
-
-            <Grid container alignItems="center">
-              <Typography sx={{ mr: 7 }} color="primary" variant="h5">
-                Gender:
-              </Typography>
-
-              <Typography variant="h5">{user.gender}</Typography>
-            </Grid>
-            <Divider sx={{ borderBottom: '1px solid' }} />
-
-            <Grid container alignItems="center">
-              <Typography sx={{ mr: 8 }} color="primary" variant="h5">
-                Group:
-              </Typography>
-
-              <Typography variant="h5">{user.group}</Typography>
-            </Grid>
-            <Divider sx={{ borderBottom: '1px solid' }} />
-
-            <Grid container alignItems="center">
-              <Typography sx={{ mr: 6 }} color="primary" variant="h5">
-                Position:
-              </Typography>
-
-              <Typography variant="h5">{user.position}</Typography>
-            </Grid>
-            <Divider sx={{ borderBottom: '1px solid' }} />
-
-            <Grid container alignItems="center">
-              <Typography sx={{ mr: 6 }} color="primary" variant="h5">
-                Address:
-              </Typography>
-
-              <Typography variant="h5">{user.address}</Typography>
-            </Grid>
-          </Stack>
-        </Grid>
+          <Button disableElevation disabled={userId === userID ? false : true} onClick={handleEdit}>
+            Edit Profile
+          </Button>
+        </ButtonGroup>
       </Grid>
-    </>
+
+      {show === true ? <PersonalInfo /> : <Work />}
+
+      <EditProfile open={edit} onClose={handleClose} formData={user} />
+    </Grid>
   );
 };
 

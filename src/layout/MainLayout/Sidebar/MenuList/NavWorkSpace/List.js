@@ -17,7 +17,10 @@ import { host } from 'services/baseAPI';
 
 // ==============================|| SIDEBAR WORK SPACE LIST ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const WorkSpaceList = () => {
   const { workSpaceId } = useParams();
@@ -28,20 +31,25 @@ const WorkSpaceList = () => {
   const [workspace, setWorkSpace] = useState([]);
   const [board, setBoard] = useState([]);
 
+  const [countB, setCountB] = useState();
+
   const loadData = (id) => {
     workSpaceAPI.getByID(id).then((result) => {
       const arr = [];
+      let count = 0;
 
       result.data[0].boards.map((value) => {
         value.member.map((user) => {
           if (user._id === userId) {
             arr.push(value);
+            count++;
           }
         });
       });
 
       setBoard(arr);
       setWorkSpace(result.data[0]);
+      setCountB(count);
     });
   };
 
@@ -78,7 +86,7 @@ const WorkSpaceList = () => {
           </>
         )}
 
-        <Typography variant="h3" fontWeight={500} sx={{ width: 160, ml: 2, overflow: 'hidden', wordBreak: 'break-word' }}>
+        <Typography variant="h3" fontWeight={500} sx={{ width: 160, ml: 2 }}>
           {workspace.name}
         </Typography>
       </Grid>
@@ -94,9 +102,27 @@ const WorkSpaceList = () => {
         </Grid>
       </Grid>
 
-      {board.map((item) => (
-        <NavWorkSpaceItem key={item._id} item={item} wsId={workSpaceId} />
-      ))}
+      {countB === 0 ? (
+        <>
+          <Typography variant="h4" fontWeight={300} sx={{ my: 2 }}>
+            You don't have any panels in this Workspace yet. The boards you create or join will show up here.
+          </Typography>
+
+          <Typography
+            variant="subtitle1"
+            sx={{ cursor: 'pointer', textDecoration: 'underline', '&:hover': { color: '#90CAF9' } }}
+            onClick={handleCreateB}
+          >
+            Create Table
+          </Typography>
+        </>
+      ) : (
+        <>
+          {board.map((item) => (
+            <NavWorkSpaceItem key={item._id} item={item} wsId={workSpaceId} />
+          ))}
+        </>
+      )}
 
       <BForm open={openB} onClose={handleCloseB} wsId={workSpaceId} dialogForm={0} />
     </>

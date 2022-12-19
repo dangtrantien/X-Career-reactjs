@@ -129,6 +129,10 @@
 
 // ==============================|| CUSTOM ||============================== //
 
+body {
+  word-break: break-word;
+}
+
 .task-title {
   margin-left: 2px;
   border: none;
@@ -148,7 +152,7 @@
   overflow: hidden;
   overflow-wrap: break-word;
   font-size: 15px;
-  width: 420px;
+  width: 100%;
   padding: 4px 8px;
   resize: none;
   &:focus {

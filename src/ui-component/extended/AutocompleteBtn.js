@@ -3,11 +3,11 @@ import { useAutocomplete } from '@mui/base/AutocompleteUnstyled';
 import { styled } from '@mui/material/styles';
 import { autocompleteClasses } from '@mui/material/Autocomplete';
 import { Avatar, Chip, Typography } from '@mui/material';
+import { useState, useEffect } from 'react';
 
 // ==============================|| CUSTOMIZED AUTOCOMPLETE BUTTON ||============================== //
 const InputWrapper = styled('div')(
   ({ theme }) => `
-  width: 320px;
   border: 1px solid ${theme.palette.mode === 'dark' ? '#434343' : '#d9d9d9'};
   background-color: ${theme.palette.mode === 'dark' ? '#141414' : '#fff'};
   border-radius: 10px;
@@ -42,7 +42,6 @@ const InputWrapper = styled('div')(
 
 const Listbox = styled('ul')(
   ({ theme }) => `
-  width: 320px;
   margin: 2px 0 0;
   padding: 0;
   list-style: none;
@@ -85,6 +84,8 @@ const Listbox = styled('ul')(
 );
 
 export default function AutocompleteBtn({ options, member, handleChange }) {
+  const [users, setUsers] = useState([]);
+
   const { getRootProps, getInputProps, getTagProps, getListboxProps, getOptionProps, groupedOptions, value, focused, setAnchorEl } =
     useAutocomplete({
       id: 'customized-autocomplete',
@@ -92,9 +93,25 @@ export default function AutocompleteBtn({ options, member, handleChange }) {
       onChange: handleChange,
       multiple: true,
       filterSelectedOptions: true,
-      options: options,
+      options: users,
       getOptionLabel: (option) => option.email || option.name,
     });
+
+  useEffect(() => {
+    if (member !== []) {
+      member.map((result) => {
+        options.map((res, index) => {
+          if (res._id === result._id) {
+            options.splice(index, 1);
+          }
+        });
+      });
+
+      setUsers(options);
+    } else {
+      setUsers(options);
+    }
+  }, [options, member]);
 
   return (
     <>

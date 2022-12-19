@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import {
+  Avatar,
   Button,
   ButtonGroup,
   ClickAwayListener,
@@ -31,7 +32,10 @@ import { host } from 'services/baseAPI';
 
 // ==============================|| SIDEBAR BOARD LIST ITEMS ||============================== //
 const boardAPI = new BoardAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const NavBoardItem = ({ item, index, wsId }) => {
   const navigate = useNavigate();
@@ -134,7 +138,7 @@ const NavBoardItem = ({ item, index, wsId }) => {
           onClick={() => itemHandler(item._id)}
         >
           <ListItemIcon>
-            <img src={item.bgImg.data} alt={item.name} height={25} width={30} />
+            <Avatar src={item.bgImg.data} variant="rounded" sx={{ height: 25, width: 30 }} />
           </ListItemIcon>
 
           <ListItemText
@@ -143,7 +147,6 @@ const NavBoardItem = ({ item, index, wsId }) => {
                 fontWeight={700}
                 variant={customization.isOpen.findIndex((id) => id === item._id) > -1 ? 'h5' : 'body1'}
                 color="inherit"
-                sx={{ width: 160, overflow: 'hidden', wordBreak: 'break-word' }}
               >
                 {item.name}
               </Typography>
@@ -176,8 +179,7 @@ const NavBoardItem = ({ item, index, wsId }) => {
       {checked === true && (
         <Fade in={moreVertIndex === index ? checked : !checked}>
           <ButtonGroup sx={{ ml: 5 }} size="small" orientation="horizontal" aria-label="small button group" variant="contained">
-            <Button key="edit" onClick={handleEditB}>
-              <IconPencil />
+            <Button key="edit" onClick={handleEditB} startIcon={<IconPencil size={16} />}>
               Edit
             </Button>
             <Button
@@ -185,8 +187,8 @@ const NavBoardItem = ({ item, index, wsId }) => {
               onClick={() => {
                 handleDeleteB(item._id);
               }}
+              startIcon={<IconTrash size={16} />}
             >
-              <IconTrash />
               Delete
             </Button>
           </ButtonGroup>

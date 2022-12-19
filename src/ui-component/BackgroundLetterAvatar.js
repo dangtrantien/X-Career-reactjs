@@ -26,11 +26,13 @@ function stringToColor(string) {
 }
 
 function stringAvatar(name) {
+  let arr = name.split(' ')[name.split(' ').length - 1].split('.');
+
   return {
     sx: {
       bgcolor: stringToColor(name),
     },
-    children: `${name && name.split(' ')[0][0].toUpperCase()}`,
+    children: `${name && arr.length === 1 ? name.split(' ')[0][0].toUpperCase() : arr[arr.length - 1]}`,
   };
 }
 

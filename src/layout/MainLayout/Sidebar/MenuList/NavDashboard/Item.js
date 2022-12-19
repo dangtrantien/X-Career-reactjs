@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { ListItemButton, ListItemIcon, ListItemText, Typography, useMediaQuery } from '@mui/material';
+import { Avatar, ListItemButton, ListItemIcon, ListItemText, Typography, useMediaQuery } from '@mui/material';
 
 // project imports
 import { MENU_OPEN, SET_MENU } from 'store/actions';
@@ -52,7 +52,7 @@ const NavDashboardItem = ({ item }) => {
         {item.logo.data === '' ? (
           <BackgroundLetterAvatars name={item.name} w={30} h={30} />
         ) : (
-          <img src={item.logo.data} alt={item.name} height={30} width={30} />
+          <Avatar src={item.logo.data} variant="rounded" sx={{ height: 30, width: 30 }} />
         )}
       </ListItemIcon>
 
@@ -62,7 +62,6 @@ const NavDashboardItem = ({ item }) => {
             fontWeight={700}
             variant={customization.isOpen.findIndex((id) => id === item._id) > -1 ? 'h5' : 'body1'}
             color="inherit"
-            sx={{ width: 160, overflow: 'hidden', wordBreak: 'break-word' }}
           >
             {item.name}
           </Typography>

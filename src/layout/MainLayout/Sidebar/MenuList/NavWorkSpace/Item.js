@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
-import { Grid, ListItemButton, ListItemIcon, ListItemText, Typography, useMediaQuery } from '@mui/material';
+import { Avatar, Grid, ListItemButton, ListItemIcon, ListItemText, Typography, useMediaQuery } from '@mui/material';
 
 // icon
 import { IconTrash } from '@tabler/icons';
@@ -19,7 +19,10 @@ import { host } from 'services/baseAPI';
 
 // ==============================|| SIDEBAR WORK SPACE LIST ITEMS ||============================== //
 const boardAPI = new BoardAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const NavWorkSpaceItem = ({ item, wsId }) => {
   const navigate = useNavigate();
@@ -100,7 +103,7 @@ const NavWorkSpaceItem = ({ item, wsId }) => {
         onClick={() => itemHandler(item._id)}
       >
         <ListItemIcon>
-          <img src={item.bgImg.data} alt={item.name} height={25} width={30} />
+          <Avatar src={item.bgImg.data} variant="rounded" sx={{ height: 25, width: 30 }} />
         </ListItemIcon>
 
         <ListItemText
@@ -109,7 +112,6 @@ const NavWorkSpaceItem = ({ item, wsId }) => {
               fontWeight={700}
               variant={customization.isOpen.findIndex((id) => id === item._id) > -1 ? 'h5' : 'body1'}
               color="inherit"
-              sx={{ width: 160, overflow: 'hidden', wordBreak: 'break-word' }}
             >
               {item.name}
             </Typography>

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 
 // material-ui
-import { Avatar, Typography, Grid, Button } from '@mui/material';
+import { Avatar, Typography, Grid, Button, Tooltip, IconButton, Menu, MenuItem, Divider } from '@mui/material';
 
 // icons
 import { IconPencil } from '@tabler/icons';
@@ -13,10 +13,14 @@ import BForm from 'views/board/BoardForm';
 import TaskList from './task/List';
 import io from 'socket.io-client';
 import { host } from 'services/baseAPI';
+import FilterBtn from 'ui-component/MenuButton/FilterBtn';
 
 // ==============================|| BOARD DETAIL ||============================== //
 const boardAPI = new BoardAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const lists = [
   {
@@ -43,6 +47,9 @@ const lists = [
 
 const Detail = () => {
   const { boardId } = useParams();
+  const navigate = useNavigate();
+
+  const [open, setOpen] = useState(false);
 
   const [board, setBoard] = useState({});
   const [bgImg, setBgImg] = useState({});
@@ -50,7 +57,21 @@ const Detail = () => {
 
   const [BMember, setBMember] = useState([]);
 
-  const [openB, setOpenB] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [userID, setUserID] = useState();
+  const openUser = Boolean(anchorEl);
+
+  const [checkNone, setCheckNone] = useState(false);
+  const [check, setCheck] = useState(false);
+
+  const handleClick = (event, id) => {
+    setAnchorEl(event.currentTarget);
+    setUserID(id);
+  };
+
+  const handleCloseUser = () => {
+    setAnchorEl(null);
+  };
 
   const loadData = (id) => {
     boardAPI.getByID(id).then((result) => {
@@ -61,12 +82,57 @@ const Detail = () => {
     });
   };
 
-  const handleEditB = () => {
-    setOpenB(true);
+  const handleFilterNone = (event) => {
+    setCheckNone(event.target.checked);
+    setCheck(false);
+
+    boardAPI.getByID(boardId).then((result) => {
+      let arr = [];
+
+      result.data[0].tasks.map((res) => {
+        if (res.member.length === 0) {
+          arr.push(res);
+        }
+      });
+
+      if (event.target.checked === true) {
+        setTask(arr);
+      } else {
+        setTask(result.data[0].tasks);
+      }
+    });
+  };
+
+  const handleFilter = (event, id) => {
+    setUserID(id);
+    setCheckNone(false);
+    setCheck(event.target.checked);
+
+    boardAPI.getByID(boardId).then((result) => {
+      let arr = [];
+
+      result.data[0].tasks.map((res) => {
+        res.member.map((data) => {
+          if (data._id === id) {
+            arr.push(res);
+          }
+        });
+      });
+
+      if (event.target.checked === true) {
+        setTask(arr);
+      } else {
+        setTask(result.data[0].tasks);
+      }
+    });
+  };
+
+  const handleEdit = () => {
+    setOpen(true);
   };
 
   const handleClose = () => {
-    setOpenB(false);
+    setOpen(false);
   };
 
   useEffect(() => {
@@ -80,6 +146,7 @@ const Detail = () => {
       loadData(boardId);
     });
   }, [boardId]);
+
   return (
     <>
       <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2, px: 2 }}>
@@ -88,12 +155,83 @@ const Detail = () => {
         </Typography>
 
         <Grid item display="flex">
+          <Grid sx={{ mr: 2 }}>
+            <FilterBtn
+              page="board"
+              id={userID}
+              check={check}
+              checkNone={checkNone}
+              member={board.member}
+              handleFilterNone={handleFilterNone}
+              handleFilter={handleFilter}
+            />
+          </Grid>
+
           {BMember.map((user) => (
-            <Avatar key={user._id} src={user.avatar.data} sx={{ width: 30, height: 30 }} />
+            <div key={user._id}>
+              <Tooltip title={user.name}>
+                <IconButton
+                  onClick={(e) => handleClick(e, user._id)}
+                  aria-controls={openUser ? 'account-menu' : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={openUser ? 'true' : undefined}
+                >
+                  <Avatar src={user.avatar.data} sx={{ width: 30, height: 30 }} />
+                </IconButton>
+              </Tooltip>
+
+              {userID === user._id && (
+                <Menu
+                  anchorEl={anchorEl}
+                  id="account-menu"
+                  open={openUser}
+                  onClose={handleCloseUser}
+                  PaperProps={{
+                    elevation: 0,
+                    sx: {
+                      overflow: 'visible',
+                      filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                      mt: 1.5,
+                      '& .MuiAvatar-root': {
+                        width: 80,
+                        height: 80,
+                        ml: -0.5,
+                        mr: 1,
+                      },
+                      '&:before': {
+                        content: '""',
+                        display: 'block',
+                        position: 'absolute',
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        transform: 'translateY(-50%) rotate(45deg)',
+                        zIndex: 0,
+                      },
+                    },
+                  }}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                >
+                  <Grid container justifyContent="center" alignItems="center" sx={{ p: 3 }}>
+                    <Avatar alt="profile user" src={user.avatar.data} sx={{ mr: 2 }} />
+
+                    <Grid>
+                      <Typography variant="h3">{user.name}</Typography>
+
+                      <Typography variant="subtitle2">{user.email}</Typography>
+                    </Grid>
+                  </Grid>
+                  <Divider />
+
+                  <MenuItem onClick={() => navigate(`/u/profile/${user._id}`, { replace: true })}>View profile</MenuItem>
+                </Menu>
+              )}
+            </div>
           ))}
 
-          <Button variant="contained" size="small" sx={{ ml: 2 }} onClick={handleEditB}>
-            <IconPencil />
+          <Button variant="contained" sx={{ ml: 2, height: 'fit-content' }} onClick={handleEdit} startIcon={<IconPencil size={20} />}>
             Edit
           </Button>
         </Grid>
@@ -115,7 +253,7 @@ const Detail = () => {
         ))}
       </Grid>
 
-      <BForm open={openB} onClose={handleClose} formData={board} wsId={board.workSpaceID} dialogForm={1} />
+      <BForm open={open} onClose={handleClose} formData={board} wsId={board.workSpaceID} dialogForm={1} />
     </>
   );
 };

@@ -21,11 +21,14 @@ import { host } from 'services/baseAPI';
 
 // ==============================|| WORKSPACE DETAIL ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const Detail = () => {
-  const navigate = useNavigate();
   const { workSpaceId } = useParams();
+  const navigate = useNavigate();
 
   const [openWS, setOpenWS] = useState(false);
   const [openB, setOpenB] = useState(false);
@@ -114,7 +117,7 @@ const Detail = () => {
             </>
           )}
 
-          <Typography variant="h1" sx={{ width: 300, ml: 2, overflow: 'hidden', wordBreak: 'break-word' }}>
+          <Typography variant="h1" sx={{ width: 300, ml: 2 }}>
             {workspace.name}
           </Typography>
         </Grid>
@@ -125,8 +128,14 @@ const Detail = () => {
           </Typography>
 
           <AnimateButton>
-            <Button sx={{ mr: 2 }} disableElevation onClick={handleEditWS} variant="contained" color="primary">
-              <IconPencil />
+            <Button
+              sx={{ mr: 2 }}
+              disableElevation
+              onClick={handleEditWS}
+              variant="contained"
+              color="primary"
+              startIcon={<IconPencil size={20} />}
+            >
               Edit
             </Button>
           </AnimateButton>
@@ -139,8 +148,8 @@ const Detail = () => {
               }}
               variant="contained"
               color="primary"
+              startIcon={<IconTrash size={20} />}
             >
-              <IconTrash />
               Delete
             </Button>
           </AnimateButton>

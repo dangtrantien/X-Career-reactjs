@@ -15,7 +15,10 @@ import { host } from 'services/baseAPI';
 
 // ==============================|| TASK ITEM ||============================== //
 const taskAPI = new TaskAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const TaskItem = ({ item, bId }) => {
   const [openT, setOpenT] = useState(false);
@@ -60,6 +63,7 @@ const TaskItem = ({ item, bId }) => {
       }
     });
   };
+
   return (
     <>
       <Grid container sx={{ position: 'relative', p: 1 }}>
@@ -68,6 +72,9 @@ const TaskItem = ({ item, bId }) => {
             borderRadius: 2,
             width: 215,
             backgroundColor: 'white',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
             '&:hover': { backgroundColor: 'rgb(250, 250, 250)' },
             '&:hover + .hide': {
               display: 'block',
@@ -79,14 +86,12 @@ const TaskItem = ({ item, bId }) => {
         >
           <ListItemText primary={item.task} />
 
-          {item.member !== [] ? (
-            <div style={{ marginRight: 10, display: 'flex' }}>
+          {item.member !== [] && (
+            <div style={{ marginTop: 10, display: 'flex' }}>
               {item.member.map((user) => (
                 <Avatar key={user._id} src={user.avatar.data} sx={{ width: 24, height: 24 }} />
               ))}
             </div>
-          ) : (
-            <></>
           )}
         </ListItemButton>
 

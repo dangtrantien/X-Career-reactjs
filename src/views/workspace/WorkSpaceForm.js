@@ -22,7 +22,10 @@ import { host } from 'services/baseAPI';
 // ==============================|| WORKSPACE FORM ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
 const userAPI = new UserAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const WSForm = (props) => {
   const { open, onClose, formData, dialogForm } = props;
@@ -77,6 +80,7 @@ const WSForm = (props) => {
               });
 
               setTimeout(() => {
+                onClose(!open);
                 navigate(`/w/detail/${res.data._id}`, { replace: true });
               }, 3000);
             }
@@ -165,10 +169,6 @@ const WSForm = (props) => {
   };
 
   useEffect(() => {
-    userAPI.getAll({ skip: 0, limit: 1000, orderBy: 'name' }).then((res) => {
-      setUsers(res.data.data);
-    });
-
     if (dialogForm === 0) {
       setWorkSpace({
         _id: '',
@@ -182,13 +182,17 @@ const WSForm = (props) => {
     } else if (dialogForm === 1) {
       setWorkSpace(formData);
       setMember(formData.member);
+
+      userAPI.getAll({ skip: 0, limit: 100, orderBy: 'name' }).then((res) => {
+        setUsers(res.data.data);
+      });
     }
   }, [dialogForm, formData]);
 
   return (
     <Dialog open={open} onClose={handleClose} scroll="body">
       <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-        <DialogForm value={dialogForm} index={0}>
+        <DialogForm value={dialogForm} index={0} width={400}>
           <DialogTitle display="flex" justifyContent="center" sx={{ fontSize: 20, fontWeight: 700 }}>
             Create Work Space
           </DialogTitle>
@@ -200,12 +204,13 @@ const WSForm = (props) => {
               <OutlinedInput id="_id" name="_id" value={workspace._id} onChange={handleChange} variant="standard" />
             </Grid>
 
-            <Grid container alignItems="center" sx={{ height: 70 }}>
-              <Typography sx={{ mr: 2 }} color="primary" variant="h5">
+            <Grid container justifyContent="space-between" alignItems="center" sx={{ height: 70 }}>
+              <Typography color="primary" variant="h5">
                 Work space name:
               </Typography>
 
               <OutlinedInput
+                sx={{ width: 2 / 3 }}
                 id="name"
                 type="text"
                 value={workspace.name}
@@ -217,7 +222,7 @@ const WSForm = (props) => {
           </DialogContent>
         </DialogForm>
 
-        <DialogForm value={dialogForm} index={1}>
+        <DialogForm value={dialogForm} index={1} width={500}>
           <DialogTitle display="flex" justifyContent="center" sx={{ fontSize: 20, fontWeight: 700 }}>
             Edit Work Space
           </DialogTitle>
@@ -230,19 +235,20 @@ const WSForm = (props) => {
             </Grid>
 
             <Grid container alignItems="center">
-              <Typography sx={{ mr: 2 }} color="primary" variant="h5">
+              <Typography sx={{ mr: 8 }} color="primary" variant="h5">
                 Work space logo:
               </Typography>
 
-              {workspace.logo && <InputFileButton defaultValue={workspace.logo.data} logo={workspace.name} name="logo" />}
+              <InputFileButton defaultValue={workspace.logo && workspace.logo.data} logo={workspace.name} name="logo" />
             </Grid>
 
-            <Grid container alignItems="center" sx={{ height: 70 }}>
-              <Typography sx={{ mr: 2 }} color="primary" variant="h5">
+            <Grid container justifyContent="space-between" alignItems="center" sx={{ height: 70 }}>
+              <Typography color="primary" variant="h5">
                 Work space name:
               </Typography>
 
               <OutlinedInput
+                sx={{ width: 2 / 3 }}
                 id="name"
                 type="text"
                 value={workspace.name}
@@ -263,7 +269,7 @@ const WSForm = (props) => {
         </DialogForm>
 
         <Grid container alignItems="center" justifyContent="space-around" sx={{ my: 2 }}>
-          <AnimateButton sx={{ mr: 4 }}>
+          <AnimateButton>
             <Button disableElevation size="large" onClick={handleClose} variant="contained" color="secondary">
               Cancel
             </Button>

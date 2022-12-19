@@ -82,12 +82,12 @@ const MainLayout = ({ page }) => {
   }, [matchDownMd]);
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: page === 'user' ? 'block' : 'flex' }}>
       <CssBaseline />
       {/* header */}
       <AppBar
         enableColorOnDark
-        position="fixed"
+        position={page === 'user' ? 'static' : 'fixed'}
         color="inherit"
         elevation={0}
         sx={{

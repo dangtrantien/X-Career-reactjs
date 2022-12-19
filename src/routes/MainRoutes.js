@@ -23,14 +23,14 @@ const DashboardRoutes = {
   children: [
     {
       path: '/',
-      element: <DashboardDefault />,
+      element: <DashboardDefault page="dashboard" />,
     },
     {
-      path: 'u',
+      path: 'dashboard',
       children: [
         {
           path: 'default',
-          element: <DashboardDefault />,
+          element: <DashboardDefault page="dashboard" />,
         },
       ],
     },

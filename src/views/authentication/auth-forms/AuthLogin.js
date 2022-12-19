@@ -143,7 +143,7 @@ const AuthLogin = ({ ...others }) => {
                   name="email"
                   onBlur={handleBlur}
                   onChange={handleChange}
-                  label="Email Address / Username"
+                  label="Email Address"
                   inputProps={{}}
                 />
                 {touched.email && errors.email && (

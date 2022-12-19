@@ -21,10 +21,13 @@ import { host } from 'services/baseAPI';
 const commentAPI = new CommentAPI();
 const userAPI = new UserAPI();
 const uploadAPI = new UploadAPI();
-const socket = io(host);
+const socket = io(host, {
+  transports: ['websocket', 'polling'],
+  withCredentials: true,
+});
 
 const InputComment = (props) => {
-  const { taskId, onEdit, onClose, message, commentId } = props;
+  const { taskId, onEdit, onClose, editMessage, fileMessage, commentId, inputWidth } = props;
 
   const inputRef = createRef();
   const userID = sessionStorage.getItem('id');
@@ -33,6 +36,7 @@ const InputComment = (props) => {
   const [sender, setSender] = useState({});
 
   const [showEmoji, setShowEmoji] = useState(false);
+  const [file, setFile] = useState(false);
 
   const handleClose = () => {
     onClose(!onEdit);
@@ -52,7 +56,8 @@ const InputComment = (props) => {
         if (res.data.success === true) {
           socket.emit('upload', res.data.data);
 
-          setInputStr(res.data.data.file.url);
+          setFile(true);
+          setInputStr(res.data.data.file);
         }
       })
       .catch(() => {
@@ -87,6 +92,10 @@ const InputComment = (props) => {
       taskID: taskId,
     };
 
+    if (file === true) {
+      comment.message = fileMessage;
+    }
+
     commentAPI
       .createNew(comment)
       .then((res) => {
@@ -94,6 +103,7 @@ const InputComment = (props) => {
           socket.emit('comment', res.data.post);
 
           setInputStr('');
+          setFile(false);
         }
       })
       .catch(() => {
@@ -137,15 +147,21 @@ const InputComment = (props) => {
       setSender(res.data[0]);
     });
 
-    if (message) {
-      setInputStr(message);
+    if (editMessage) {
+      setInputStr(editMessage);
     }
-  }, [userID, message]);
+
+    if (fileMessage) {
+      setFile(true);
+      setInputStr(`[${fileMessage.name}]`);
+    }
+  }, [userID, editMessage, fileMessage]);
+
   return (
     <Grid container alignItems="flex-start" sx={{ mt: 1 }}>
-      {!message && sender.avatar && <Avatar src={sender.avatar.data} sx={{ width: 40, height: 40, mr: 1 }} />}
+      {!editMessage && <Avatar src={sender.avatar && sender.avatar.data} sx={{ width: 40, height: 40, mr: 1 }} />}
 
-      <Grid sx={{ p: 1, borderRadius: 2, boxShadow: 4, position: 'relative' }}>
+      <Grid sx={{ p: 1, borderRadius: 2, boxShadow: 4, position: 'relative', width: inputWidth }}>
         <textarea
           className="comment"
           placeholder="Write a comment..."
@@ -169,9 +185,9 @@ const InputComment = (props) => {
                 size="small"
                 variant="contained"
                 color="primary"
-                onClick={!message ? handleComment : handleEditComment}
+                onClick={!editMessage ? handleComment : handleEditComment}
               >
-                {!message ? <IconSend size={20} /> : 'Save'}
+                {!editMessage ? <IconSend size={20} /> : 'Save'}
               </Button>
             </AnimateButton>
 
@@ -209,8 +225,10 @@ InputComment.propTypes = {
   taskId: PropTypes.any.isRequired,
   onEdit: PropTypes.bool,
   onClose: PropTypes.func,
-  message: PropTypes.any,
+  editMessage: PropTypes.any,
+  fileMessage: PropTypes.any,
   commentId: PropTypes.any,
+  inputWidth: PropTypes.any,
 };
 
 export default InputComment;

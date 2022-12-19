@@ -9,6 +9,8 @@ import LogoSection from '../LogoSection';
 import SearchSection from './SearchSection';
 import ProfileSection from './ProfileSection';
 import NotificationSection from './NotificationSection';
+import NavListBtn from 'ui-component/MenuButton/NavListBtn';
+import CreateBtn from 'ui-component/MenuButton/CreateBtn';
 
 // icons
 import { IconMenu2 } from '@tabler/icons';
@@ -34,7 +36,7 @@ const Header = ({ handleLeftDrawerToggle, page }) => {
           <LogoSection />
         </Box>
 
-        {page === 'user' || page === 'dashboard' ? (
+        {page === 'user' ? (
           <></>
         ) : (
           <ButtonBase sx={{ borderRadius: '12px', overflow: 'hidden' }}>
@@ -62,11 +64,16 @@ const Header = ({ handleLeftDrawerToggle, page }) => {
 
       {/* header search */}
       <SearchSection />
+
+      <NavListBtn />
+
+      <CreateBtn />
+
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ flexGrow: 1 }} />
 
       {/* notification & profile */}
-      <NotificationSection />
+      {/* <NotificationSection /> */}
       <ProfileSection />
     </>
   );

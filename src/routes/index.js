@@ -11,5 +11,5 @@ import WorkSpaceRoutes from './WorkSpaceRoutes';
 // ==============================|| ROUTING RENDER ||============================== //
 
 export default function ThemeRoutes() {
-  return useRoutes([MainRoutes, AuthenticationRoutes, BoardRoutes, ErrorRoutes, UserRoutes, WorkSpaceRoutes]);
+  return useRoutes([MainRoutes, AuthenticationRoutes, UserRoutes, WorkSpaceRoutes, BoardRoutes, ErrorRoutes]);
 }
