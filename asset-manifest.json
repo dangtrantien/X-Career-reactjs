@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/berry-reactjs/static/css/main.2fecafac.css",
-    "main.js": "/berry-reactjs/static/js/main.a283df1b.js",
-    "static/js/436.94f042b1.chunk.js": "/berry-reactjs/static/js/436.94f042b1.chunk.js",
-    "static/js/388.5093d2e7.chunk.js": "/berry-reactjs/static/js/388.5093d2e7.chunk.js",
+    "main.js": "/berry-reactjs/static/js/main.c43a45f1.js",
+    "static/js/436.d730ebd9.chunk.js": "/berry-reactjs/static/js/436.d730ebd9.chunk.js",
+    "static/js/388.b8ed1710.chunk.js": "/berry-reactjs/static/js/388.b8ed1710.chunk.js",
     "static/js/245.70e3eed1.chunk.js": "/berry-reactjs/static/js/245.70e3eed1.chunk.js",
     "static/js/813.8e280891.chunk.js": "/berry-reactjs/static/js/813.8e280891.chunk.js",
-    "static/js/37.1c9c6935.chunk.js": "/berry-reactjs/static/js/37.1c9c6935.chunk.js",
+    "static/js/37.800a36e8.chunk.js": "/berry-reactjs/static/js/37.800a36e8.chunk.js",
     "static/js/517.bc120768.chunk.js": "/berry-reactjs/static/js/517.bc120768.chunk.js",
-    "static/js/803.70c0f183.chunk.js": "/berry-reactjs/static/js/803.70c0f183.chunk.js",
-    "static/js/259.d73e9db5.chunk.js": "/berry-reactjs/static/js/259.d73e9db5.chunk.js",
+    "static/js/803.2cf43131.chunk.js": "/berry-reactjs/static/js/803.2cf43131.chunk.js",
+    "static/js/259.97907c78.chunk.js": "/berry-reactjs/static/js/259.97907c78.chunk.js",
     "static/js/868.7d00ce64.chunk.js": "/berry-reactjs/static/js/868.7d00ce64.chunk.js",
     "static/js/559.60ea8744.chunk.js": "/berry-reactjs/static/js/559.60ea8744.chunk.js",
     "static/js/649.b45bb581.chunk.js": "/berry-reactjs/static/js/649.b45bb581.chunk.js",
@@ -22,15 +22,15 @@
     "static/media/social-google.svg": "/berry-reactjs/static/media/social-google.a57081bd95c2519caad91216a8dba3ad.svg",
     "index.html": "/berry-reactjs/index.html",
     "main.2fecafac.css.map": "/berry-reactjs/static/css/main.2fecafac.css.map",
-    "main.a283df1b.js.map": "/berry-reactjs/static/js/main.a283df1b.js.map",
-    "436.94f042b1.chunk.js.map": "/berry-reactjs/static/js/436.94f042b1.chunk.js.map",
-    "388.5093d2e7.chunk.js.map": "/berry-reactjs/static/js/388.5093d2e7.chunk.js.map",
+    "main.c43a45f1.js.map": "/berry-reactjs/static/js/main.c43a45f1.js.map",
+    "436.d730ebd9.chunk.js.map": "/berry-reactjs/static/js/436.d730ebd9.chunk.js.map",
+    "388.b8ed1710.chunk.js.map": "/berry-reactjs/static/js/388.b8ed1710.chunk.js.map",
     "245.70e3eed1.chunk.js.map": "/berry-reactjs/static/js/245.70e3eed1.chunk.js.map",
     "813.8e280891.chunk.js.map": "/berry-reactjs/static/js/813.8e280891.chunk.js.map",
-    "37.1c9c6935.chunk.js.map": "/berry-reactjs/static/js/37.1c9c6935.chunk.js.map",
+    "37.800a36e8.chunk.js.map": "/berry-reactjs/static/js/37.800a36e8.chunk.js.map",
     "517.bc120768.chunk.js.map": "/berry-reactjs/static/js/517.bc120768.chunk.js.map",
-    "803.70c0f183.chunk.js.map": "/berry-reactjs/static/js/803.70c0f183.chunk.js.map",
-    "259.d73e9db5.chunk.js.map": "/berry-reactjs/static/js/259.d73e9db5.chunk.js.map",
+    "803.2cf43131.chunk.js.map": "/berry-reactjs/static/js/803.2cf43131.chunk.js.map",
+    "259.97907c78.chunk.js.map": "/berry-reactjs/static/js/259.97907c78.chunk.js.map",
     "868.7d00ce64.chunk.js.map": "/berry-reactjs/static/js/868.7d00ce64.chunk.js.map",
     "559.60ea8744.chunk.js.map": "/berry-reactjs/static/js/559.60ea8744.chunk.js.map",
     "649.b45bb581.chunk.js.map": "/berry-reactjs/static/js/649.b45bb581.chunk.js.map",
@@ -41,6 +41,6 @@
   },
   "entrypoints": [
     "static/css/main.2fecafac.css",
-    "static/js/main.a283df1b.js"
+    "static/js/main.c43a45f1.js"
   ]
 }
