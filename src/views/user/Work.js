@@ -2,19 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 // material-ui
-import {
-  Typography,
-  Grid,
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHead,
-  Avatar,
-  TablePagination,
-  TableContainer,
-  Paper,
-} from '@mui/material';
+import { Typography, Grid, Table, TableBody, TableRow, TableCell, TableHead, Avatar, TablePagination, TableContainer } from '@mui/material';
 
 // icons
 import { IconList, IconUsers } from '@tabler/icons';
