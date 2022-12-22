@@ -9,6 +9,7 @@ import { Avatar, Typography, Grid, Button } from '@mui/material';
 import { IconPencil, IconTrash, IconUsers } from '@tabler/icons';
 
 // project imports
+import swal from 'sweetalert';
 import MainCard from 'ui-component/cards/MainCard';
 import WorkSpaceAPI from 'services/WorkSpaceAPI';
 import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';

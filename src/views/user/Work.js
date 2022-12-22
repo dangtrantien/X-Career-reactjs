@@ -123,7 +123,7 @@ const Work = () => {
     setTaskPage(0);
   };
 
-  const handleFilter = (event, id) => {
+  const handleFilterMember = (event, id) => {
     setBoardID(id);
     setCheck(event.target.checked);
 
@@ -261,7 +261,7 @@ const Work = () => {
             </Typography>
           </Grid>
 
-          <FilterBtn page="user" id={boardID} check={check} board={board} handleFilter={handleFilter} />
+          <FilterBtn page="user" id={boardID} check={check} board={board} handleFilterMember={handleFilterMember} />
         </Grid>
 
         {task.length === 0 ? (
@@ -340,7 +340,13 @@ const Work = () => {
                         <Typography variant="h5">{data.boardID.name}</Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="h5">The task has no expiration date</Typography>
+                        {data.day && data.day.startTime !== '' && data.day.expirationDate !== '' && data.day.expirationTime !== '' ? (
+                          <Typography variant="h5">
+                            {data.day.startTime} - {data.day.expirationDate} at {data.day.expirationTime}
+                          </Typography>
+                        ) : (
+                          <Typography variant="h5">The task has no expiration date</Typography>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

@@ -12,7 +12,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import WSForm from 'views/workspace/WorkSpaceForm';
 import BForm from 'views/board/BoardForm';
 
-// ==============================|| WORKSPACE AND BOARD MENU ||============================== //
+// ==============================|| CREATE BUTTON ||============================== //
 
 const StyledMenu = styled((props) => (
   <Menu

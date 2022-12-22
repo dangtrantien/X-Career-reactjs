@@ -8,6 +8,7 @@ import { Button, Grid, Avatar, Typography } from '@mui/material';
 import { IconListDetails, IconPoint } from '@tabler/icons';
 
 // project imports
+import swal from 'sweetalert';
 import UploadAPI from 'services/UploadAPI';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import EndcodeFileBase64 from 'utils/endcodeFileBase64';

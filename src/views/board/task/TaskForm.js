@@ -6,7 +6,7 @@ import draftToMarkdown from 'draftjs-to-markdown';
 import '../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
 // material-ui
-import { Button, OutlinedInput, Typography, Grid, Dialog, Box, DialogContent, MenuList, MenuItem } from '@mui/material';
+import { Button, OutlinedInput, Typography, Grid, Dialog, Box, DialogContent, MenuList, MenuItem, Checkbox, Chip } from '@mui/material';
 
 // icons/img
 import {
@@ -28,10 +28,11 @@ import UploadAPI from 'services/UploadAPI';
 import AnimateButton from 'ui-component/extended/AnimateButton';
 import DialogForm from 'ui-component/extended/DialogForm';
 import AutocompleteBtn from 'ui-component/extended/AutocompleteBtn';
-import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
 import FileUpload from './FileUpload';
 import MoveTaskBtn from 'ui-component/MenuButton/MoveTaskBtn';
+import CalendarBtn from 'ui-component/MenuButton/CalendarBtn';
+import io from 'socket.io-client';
+import { host } from 'services/baseAPI';
 
 // ==============================|| BOARD FORM ||============================== //
 const taskAPI = new TaskAPI();
@@ -43,7 +44,7 @@ const socket = io(host, {
 });
 
 const TForm = (props) => {
-  const { open, onClose, formData, bId, status, dialogForm } = props;
+  const { open, onClose, formData, bId, status, dialogForm, formDataID } = props;
 
   const [task, setTask] = useState({});
   const [BId, setBId] = useState();
@@ -59,8 +60,14 @@ const TForm = (props) => {
   const [showMember, setShowMember] = useState(false);
   const [showAttach, setShowAttach] = useState(false);
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const openMoveTask = Boolean(anchorEl);
+  const [anchorElCalendar, setAnchorElCalendar] = useState(null);
+  const openCalendar = Boolean(anchorElCalendar);
+
+  const [anchorElTask, setAnchorElTask] = useState(null);
+  const openMoveTask = Boolean(anchorElTask);
+
+  const [check, setCheck] = useState(false);
+  const [expiredDate, setExpiredDate] = useState(false);
 
   const handleClose = () => {
     onClose(!open);
@@ -71,17 +78,29 @@ const TForm = (props) => {
     setShowMember(!showMember);
   };
 
+  const handleCalendar = (event) => {
+    setAnchorElCalendar(event.currentTarget);
+  };
+
+  const handleCloseCalendar = () => {
+    setAnchorElCalendar(null);
+  };
+
+  const handleCheck = () => {
+    setCheck(!check);
+  };
+
   const handleShowAttach = (id) => {
     setShow(id);
     setShowAttach(!showAttach);
   };
 
   const handleMoveTask = (event) => {
-    setAnchorEl(event.currentTarget);
+    setAnchorElTask(event.currentTarget);
   };
 
   const handleCloseMoveTask = () => {
-    setAnchorEl(null);
+    setAnchorElTask(null);
   };
 
   const handleChange = (event) => {
@@ -205,8 +224,48 @@ const TForm = (props) => {
           setShowAttach(true);
         }
       });
+
+      if (formData._id === formDataID && formData.day) {
+        if (new Date().toLocaleDateString() > formData.day.expirationDate) {
+          setExpiredDate(true);
+        } else if (new Date().toLocaleDateString() === formData.day.expirationDate) {
+          if (new Date().getHours() > formData.day.expirationTime.split(':')[0]) {
+            setExpiredDate(true);
+          } else if (new Date().getHours() === formData.day.expirationTime.split(':')[0]) {
+            if (new Date().getMinutes() > formData.day.expirationTime.split(':')[1]) {
+              setExpiredDate(true);
+            } else {
+              setExpiredDate(false);
+            }
+          } else {
+            setExpiredDate(false);
+          }
+        } else {
+          setExpiredDate(false);
+        }
+      }
     }
-  }, [dialogForm, formData, bId, status]);
+
+    socket.on('task', (data) => {
+      if (new Date().toLocaleDateString() > data.day.expirationDate) {
+        setExpiredDate(true);
+      } else if (new Date().toLocaleDateString() === data.day.expirationDate) {
+        if (new Date().getHours() > data.day.expirationTime.split(':')[0]) {
+          setExpiredDate(true);
+        } else if (new Date().getHours() === data.day.expirationTime.split(':')[0]) {
+          if (new Date().getMinutes() > data.day.expirationTime.split(':')[1]) {
+            setExpiredDate(true);
+          } else {
+            setExpiredDate(false);
+          }
+        } else {
+          setExpiredDate(false);
+        }
+      } else {
+        setExpiredDate(false);
+      }
+    });
+  }, [dialogForm, formData, bId, status, formDataID]);
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="lg" scroll="body">
@@ -273,6 +332,26 @@ const TForm = (props) => {
                   </Grid>
                 )}
 
+                {task.day && task.day.startTime !== '' && task.day.expirationDate !== '' && task.day.expirationTime !== '' && (
+                  <Grid container alignItems="center" sx={{ mt: 2, mb: 1 }}>
+                    <Grid item display="flex" alignItems="center">
+                      <IconClock />
+
+                      <Typography sx={{ ml: 1 }} color="primary" variant="h5">
+                        Expiration date:
+                      </Typography>
+                    </Grid>
+
+                    <Checkbox checked={check} onChange={handleCheck} />
+
+                    <Typography color="black" variant="h5">
+                      {task.day.startTime} - {task.day.expirationDate} at {task.day.expirationTime}
+                      {check === false && expiredDate === true && <Chip sx={{ ml: 1 }} size="small" label="expired" color="error" />}
+                      {check === true && <Chip sx={{ ml: 1 }} size="small" label="done" color="success" />}
+                    </Typography>
+                  </Grid>
+                )}
+
                 <Grid>
                   <Grid container alignItems="center" sx={{ mt: 4 }}>
                     <IconAlignJustified />
@@ -335,12 +414,13 @@ const TForm = (props) => {
                   Member
                 </MenuItem>
 
-                <MenuItem sx={{ mb: 2, boxShadow: 2 }}>
+                <MenuItem sx={{ mb: 2, boxShadow: 2 }} onClick={handleCalendar}>
                   <Grid sx={{ mr: 1 }}>
                     <IconClock size={16} />
                   </Grid>
                   Day
                 </MenuItem>
+                <CalendarBtn task={task} anchorEl={anchorElCalendar} open={openCalendar} handleClose={handleCloseCalendar} />
 
                 <MenuItem sx={{ mb: 2, boxShadow: 2 }} onClick={() => handleShowAttach(task._id)}>
                   <Grid sx={{ mr: 1 }}>
@@ -359,7 +439,7 @@ const TForm = (props) => {
                   </Grid>
                   Move
                 </MenuItem>
-                <MoveTaskBtn task={task} anchorEl={anchorEl} open={openMoveTask} handleClose={handleCloseMoveTask} />
+                <MoveTaskBtn task={task} anchorEl={anchorElTask} open={openMoveTask} handleClose={handleCloseMoveTask} />
 
                 <MenuItem sx={{ mb: 2, boxShadow: 2 }}>
                   <Grid sx={{ mr: 1 }}>
@@ -389,6 +469,7 @@ TForm.propTypes = {
   bId: PropTypes.any,
   status: PropTypes.number,
   dialogForm: PropTypes.number.isRequired,
+  formDataID: PropTypes.any,
 };
 
 export default TForm;

@@ -8,6 +8,7 @@ import { Box, Grid, Button, Menu, DialogTitle, Select, DialogContent, InputLabel
 // icons
 
 // project imports
+import swal from 'sweetalert';
 import BoardAPI from 'services/BoardAPI';
 import TaskAPI from 'services/TaskAPI';
 import AnimateButton from 'ui-component/extended/AnimateButton';

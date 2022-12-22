@@ -8,6 +8,7 @@ import { Avatar, ListItemButton, ListItemText, Grid } from '@mui/material';
 import { IconTrash } from '@tabler/icons';
 
 // project imports
+import swal from 'sweetalert';
 import TForm from './TaskForm';
 import TaskAPI from 'services/TaskAPI';
 import io from 'socket.io-client';
@@ -114,7 +115,7 @@ const TaskItem = ({ item, bId }) => {
           <IconTrash />
         </Grid>
       </Grid>
-      <TForm open={openT} onClose={handleClose} formData={item} bId={bId} dialogForm={1} />
+      <TForm open={openT} onClose={handleClose} formDataID={item._id} formData={item} bId={bId} dialogForm={1} />
     </>
   );
 };

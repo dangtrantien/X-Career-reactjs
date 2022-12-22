@@ -8,6 +8,7 @@ import { Typography, Grid, Card, Button, CardContent } from '@mui/material';
 import { IconPlus } from '@tabler/icons';
 
 // project imports
+import swal from 'sweetalert';
 import TForm from './TaskForm';
 import TaskItem from './Item';
 import TaskAPI from 'services/TaskAPI';

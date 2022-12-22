@@ -7,6 +7,7 @@ import { Grid, Avatar, Typography } from '@mui/material';
 // icons/img
 
 // project imports
+import swal from 'sweetalert';
 import CommentAPI from 'services/CommentAPI';
 import InputComment from './Input';
 import io from 'socket.io-client';

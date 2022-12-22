@@ -9,6 +9,7 @@ import { IconMoodSmile, IconPaperclip, IconSend, IconX } from '@tabler/icons';
 import Picker from 'emoji-picker-react';
 
 // project imports
+import swal from 'sweetalert';
 import CommentAPI from 'services/CommentAPI';
 import UserAPI from 'services/UserAPI';
 import UploadAPI from 'services/UploadAPI';

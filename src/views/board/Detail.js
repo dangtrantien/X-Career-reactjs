@@ -11,9 +11,9 @@ import { IconPencil } from '@tabler/icons';
 import BoardAPI from 'services/BoardAPI';
 import BForm from 'views/board/BoardForm';
 import TaskList from './task/List';
+import FilterBtn from 'ui-component/MenuButton/FilterBtn';
 import io from 'socket.io-client';
 import { host } from 'services/baseAPI';
-import FilterBtn from 'ui-component/MenuButton/FilterBtn';
 
 // ==============================|| BOARD DETAIL ||============================== //
 const boardAPI = new BoardAPI();
@@ -45,6 +45,21 @@ const lists = [
   },
 ];
 
+const date = [
+  {
+    id: 0,
+    label: 'No expiration date',
+    iconColor: 'grey',
+    task: [],
+  },
+  {
+    id: 1,
+    label: 'Out of date',
+    iconColor: 'red',
+    task: [],
+  },
+];
+
 const Detail = () => {
   const { boardId } = useParams();
   const navigate = useNavigate();
@@ -64,6 +79,9 @@ const Detail = () => {
   const [checkNone, setCheckNone] = useState(false);
   const [check, setCheck] = useState(false);
 
+  const [dateID, setDateID] = useState();
+  const [checkDate, setCheckDate] = useState(false);
+
   const handleClick = (event, id) => {
     setAnchorEl(event.currentTarget);
     setUserID(id);
@@ -75,6 +93,30 @@ const Detail = () => {
 
   const loadData = (id) => {
     boardAPI.getByID(id).then((result) => {
+      let noDate = [];
+      let expired = [];
+
+      result.data[0].tasks.map((res) => {
+        if (res.day && res.day.startTime !== '' && res.day.expirationDate !== '' && res.day.expirationTime !== '') {
+          if (new Date().toLocaleDateString() > res.day.expirationDate) {
+            expired.push(res);
+          } else if (new Date().toLocaleDateString() === res.day.expirationDate) {
+            if (new Date().getHours() > res.day.expirationTime.split(':')[0]) {
+              expired.push(res);
+            } else if (new Date().getHours() === res.day.expirationTime.split(':')[0]) {
+              if (new Date().getMinutes() > res.day.expirationTime.split(':')[1]) {
+                expired.push(res);
+              }
+            }
+          }
+        } else {
+          noDate.push(res);
+        }
+      });
+
+      date[0].task = noDate;
+      date[1].task = expired;
+
       setBoard(result.data[0]);
       setBgImg(result.data[0].bgImg);
       setTask(result.data[0].tasks);
@@ -82,7 +124,7 @@ const Detail = () => {
     });
   };
 
-  const handleFilterNone = (event) => {
+  const handleFilterMemberNone = (event) => {
     setCheckNone(event.target.checked);
     setCheck(false);
 
@@ -103,7 +145,7 @@ const Detail = () => {
     });
   };
 
-  const handleFilter = (event, id) => {
+  const handleFilterMember = (event, id) => {
     setUserID(id);
     setCheckNone(false);
     setCheck(event.target.checked);
@@ -121,6 +163,23 @@ const Detail = () => {
 
       if (event.target.checked === true) {
         setTask(arr);
+      } else {
+        setTask(result.data[0].tasks);
+      }
+    });
+  };
+
+  const handleFilterDate = (event, id) => {
+    setDateID(id);
+    setCheckDate(event.target.checked);
+
+    boardAPI.getByID(boardId).then((result) => {
+      if (event.target.checked === true) {
+        if (id === 0) {
+          setTask(date[0].task);
+        } else if (id === 1) {
+          setTask(date[1].task);
+        }
       } else {
         setTask(result.data[0].tasks);
       }
@@ -158,12 +217,16 @@ const Detail = () => {
           <Grid sx={{ mr: 2 }}>
             <FilterBtn
               page="board"
-              id={userID}
+              userId={userID}
               check={check}
               checkNone={checkNone}
               member={board.member}
-              handleFilterNone={handleFilterNone}
-              handleFilter={handleFilter}
+              handleFilterMemberNone={handleFilterMemberNone}
+              handleFilterMember={handleFilterMember}
+              date={date}
+              dateID={dateID}
+              handleFilterDate={handleFilterDate}
+              checkDate={checkDate}
             />
           </Grid>
 

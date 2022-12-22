@@ -6,11 +6,11 @@ import { styled, alpha } from '@mui/material/styles';
 import { Avatar, Button, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Grid, Menu } from '@mui/material';
 
 // icons
-import { IconFilter } from '@tabler/icons';
+import { IconClock, IconFilter } from '@tabler/icons';
 
 // project imports
 
-// ==============================|| FILTER MENU ||============================== //
+// ==============================|| FILTER BUTTON ||============================== //
 
 const StyledMenu = styled((props) => (
   <Menu
@@ -50,7 +50,20 @@ const StyledMenu = styled((props) => (
 }));
 
 const FilterBtn = (props) => {
-  const { page, id, check, checkNone, handleFilterNone, handleFilter, member, board, date } = props;
+  const {
+    page,
+    userId,
+    check,
+    checkNone,
+    handleFilterMemberNone,
+    handleFilterMember,
+    member,
+    board,
+    date,
+    dateID,
+    handleFilterDate,
+    checkDate,
+  } = props;
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -98,7 +111,7 @@ const FilterBtn = (props) => {
                       <Checkbox
                         checked={checkNone}
                         onChange={(e) => {
-                          handleFilterNone(e);
+                          handleFilterMemberNone(e);
                         }}
                       />
                       <Avatar src={''} sx={{ width: 20, height: 20, mr: 1 }} />
@@ -113,9 +126,9 @@ const FilterBtn = (props) => {
                       control={
                         <>
                           <Checkbox
-                            checked={id === user._id ? check : false}
+                            checked={userId === user._id ? check : false}
                             onChange={(e) => {
-                              handleFilter(e, user._id);
+                              handleFilterMember(e, user._id);
                             }}
                           />
                           <Avatar src={user.avatar.data} sx={{ width: 20, height: 20, mr: 1 }} />
@@ -127,9 +140,30 @@ const FilterBtn = (props) => {
               </FormGroup>
             </FormControl>
 
-            {/* <FormControl sx={{ m: 2 }} component="fieldset" variant="standard">
+            <FormControl sx={{ m: 2 }} component="fieldset" variant="standard">
               <FormLabel component="legend">Filter by date</FormLabel>
-            </FormControl> */}
+
+              <FormGroup>
+                {date &&
+                  date.map((data) => (
+                    <FormControlLabel
+                      key={data.id}
+                      control={
+                        <>
+                          <Checkbox
+                            checked={dateID === data.id ? checkDate : false}
+                            onChange={(e) => {
+                              handleFilterDate(e, data.id);
+                            }}
+                          />
+                          <IconClock size={20} color={data.iconColor} style={{ marginRight: '10px' }} />
+                        </>
+                      }
+                      label={data.label}
+                    />
+                  ))}
+              </FormGroup>
+            </FormControl>
           </Grid>
         )}
 
@@ -146,9 +180,9 @@ const FilterBtn = (props) => {
                       control={
                         <>
                           <Checkbox
-                            checked={id === data._id ? check : false}
+                            checked={userId === data._id ? check : false}
                             onChange={(e) => {
-                              handleFilter(e, data._id);
+                              handleFilterMember(e, data._id);
                             }}
                           />
                         </>
@@ -158,10 +192,6 @@ const FilterBtn = (props) => {
                   ))}
               </FormGroup>
             </FormControl>
-
-            {/* <MenuItem onClick={handleClick} disableRipple>
-              Filter by expiration date
-            </MenuItem> */}
           </Grid>
         )}
       </StyledMenu>
@@ -171,14 +201,17 @@ const FilterBtn = (props) => {
 
 FilterBtn.propTypes = {
   page: PropTypes.string,
-  id: PropTypes.any,
+  userId: PropTypes.any,
   check: PropTypes.bool,
   checkNone: PropTypes.bool,
-  handleFilterNone: PropTypes.any,
-  handleFilter: PropTypes.any,
+  handleFilterMemberNone: PropTypes.any,
+  handleFilterMember: PropTypes.any,
   member: PropTypes.array,
   board: PropTypes.array,
   date: PropTypes.array,
+  dateID: PropTypes.any,
+  handleFilterDate: PropTypes.any,
+  checkDate: PropTypes.bool,
 };
 
 export default FilterBtn;

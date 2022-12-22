@@ -16,7 +16,7 @@ import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
 import io from 'socket.io-client';
 import { host } from 'services/baseAPI';
 
-// ==============================|| WORKSPACE AND BOARD MENU ||============================== //
+// ==============================|| NAVIGATE LIST BUTTON ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
 const boardAPI = new BoardAPI();
 const socket = io(host, {
