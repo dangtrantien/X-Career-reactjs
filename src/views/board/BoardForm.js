@@ -262,6 +262,8 @@ const BForm = (props) => {
                 onChange={handleWSChange}
                 inputProps={{ 'aria-label': 'Working space' }}
               >
+                {WSId === undefined && <option>-- Choose a workspace --</option>}
+
                 {workSpace.map((data) => (
                   <option key={data._id} value={data._id}>
                     {data.name}

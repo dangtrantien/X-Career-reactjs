@@ -53,16 +53,19 @@ const FilterBtn = (props) => {
   const {
     page,
     userId,
-    check,
+    checkMember,
     checkNone,
+    member,
     handleFilterMemberNone,
     handleFilterMember,
-    member,
+    checkBoard,
+    boardId,
     board,
-    date,
-    dateID,
-    handleFilterDate,
+    handleFilterBoard,
     checkDate,
+    date,
+    dateId,
+    handleFilterDate,
   } = props;
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -126,7 +129,7 @@ const FilterBtn = (props) => {
                       control={
                         <>
                           <Checkbox
-                            checked={userId === user._id ? check : false}
+                            checked={userId === user._id ? checkMember : false}
                             onChange={(e) => {
                               handleFilterMember(e, user._id);
                             }}
@@ -151,7 +154,7 @@ const FilterBtn = (props) => {
                       control={
                         <>
                           <Checkbox
-                            checked={dateID === data.id ? checkDate : false}
+                            checked={dateId === data.id ? checkDate : false}
                             onChange={(e) => {
                               handleFilterDate(e, data.id);
                             }}
@@ -180,14 +183,39 @@ const FilterBtn = (props) => {
                       control={
                         <>
                           <Checkbox
-                            checked={userId === data._id ? check : false}
+                            checked={boardId === data._id ? checkBoard : false}
                             onChange={(e) => {
-                              handleFilterMember(e, data._id);
+                              handleFilterBoard(e, data._id);
                             }}
                           />
                         </>
                       }
                       label={data.name}
+                    />
+                  ))}
+              </FormGroup>
+            </FormControl>
+
+            <FormControl sx={{ m: 2 }} component="fieldset" variant="standard">
+              <FormLabel component="legend">Filter by date</FormLabel>
+
+              <FormGroup>
+                {date &&
+                  date.map((data) => (
+                    <FormControlLabel
+                      key={data.id}
+                      control={
+                        <>
+                          <Checkbox
+                            checked={dateId === data.id ? checkDate : false}
+                            onChange={(e) => {
+                              handleFilterDate(e, data.id);
+                            }}
+                          />
+                          <IconClock size={20} color={data.iconColor} style={{ marginRight: '10px' }} />
+                        </>
+                      }
+                      label={data.label}
                     />
                   ))}
               </FormGroup>
@@ -202,16 +230,19 @@ const FilterBtn = (props) => {
 FilterBtn.propTypes = {
   page: PropTypes.string,
   userId: PropTypes.any,
-  check: PropTypes.bool,
+  checkMember: PropTypes.bool,
   checkNone: PropTypes.bool,
+  member: PropTypes.array,
   handleFilterMemberNone: PropTypes.any,
   handleFilterMember: PropTypes.any,
-  member: PropTypes.array,
+  boardId: PropTypes.any,
+  checkBoard: PropTypes.bool,
   board: PropTypes.array,
-  date: PropTypes.array,
-  dateID: PropTypes.any,
-  handleFilterDate: PropTypes.any,
+  handleFilterBoard: PropTypes.any,
   checkDate: PropTypes.bool,
+  date: PropTypes.array,
+  dateId: PropTypes.any,
+  handleFilterDate: PropTypes.any,
 };
 
 export default FilterBtn;

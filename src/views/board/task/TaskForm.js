@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { Editor } from 'react-draft-wysiwyg';
-import { convertToRaw } from 'draft-js';
+import { EditorState, ContentState, convertFromHTML, convertToRaw } from 'draft-js';
 import draftToMarkdown from 'draftjs-to-markdown';
 import '../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 
@@ -46,7 +46,7 @@ const socket = io(host, {
 const TForm = (props) => {
   const { open, onClose, formData, bId, status, dialogForm, formDataID } = props;
 
-  const [task, setTask] = useState({});
+  const [taskForm, setTaskForm] = useState({});
   const [BId, setBId] = useState();
   const [Status, setStatus] = useState();
 
@@ -67,7 +67,7 @@ const TForm = (props) => {
   const openMoveTask = Boolean(anchorElTask);
 
   const [check, setCheck] = useState(false);
-  const [expiredDate, setExpiredDate] = useState(false);
+  const [expiredDate, setExpiredDate] = useState();
 
   const handleClose = () => {
     onClose(!open);
@@ -88,6 +88,7 @@ const TForm = (props) => {
 
   const handleCheck = () => {
     setCheck(!check);
+    setExpiredDate('done');
   };
 
   const handleShowAttach = (id) => {
@@ -106,7 +107,7 @@ const TForm = (props) => {
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
-    setTask({ ...task, [name]: value });
+    setTaskForm({ ...taskForm, [name]: value });
   };
 
   const handleMemberChange = (event, value) => {
@@ -120,6 +121,12 @@ const TForm = (props) => {
       task: data.get('task'),
       describe: describe,
       member: TMember,
+      day: {
+        startTime: taskForm.day.startTime,
+        expirationDate: taskForm.day.expirationDate,
+        expirationTime: taskForm.day.expirationTime,
+        expired: check === true ? 'done' : '',
+      },
     };
 
     if (task.task === '') {
@@ -185,17 +192,24 @@ const TForm = (props) => {
 
   useEffect(() => {
     if (dialogForm === 0) {
-      setTask({
+      setTaskForm({
         _id: '',
         task: '',
+        day: {
+          startTime: '',
+          expirationDate: '',
+          expirationTime: '',
+          expired: '',
+        },
       });
       setBId(bId);
       setStatus(status);
       setDescribe('');
       setTMember([]);
     } else if (dialogForm === 1) {
-      setTask(formData);
+      setTaskForm(formData);
       setStatus(formData.status);
+      setEditorState(EditorState.createWithContent(ContentState.createFromBlockArray(convertFromHTML(`<p>${formData.describe}</p>`))));
       setDescribe(formData.describe);
 
       if (bId !== undefined) {
@@ -208,6 +222,8 @@ const TForm = (props) => {
         setTMember(formData.member);
         setShow(formData._id);
         setShowMember(true);
+      } else {
+        setShowMember(false);
       }
 
       uploadAPI.getFromTask().then((result) => {
@@ -226,45 +242,30 @@ const TForm = (props) => {
       });
 
       if (formData._id === formDataID && formData.day) {
-        if (new Date().toLocaleDateString() > formData.day.expirationDate) {
-          setExpiredDate(true);
-        } else if (new Date().toLocaleDateString() === formData.day.expirationDate) {
-          if (new Date().getHours() > formData.day.expirationTime.split(':')[0]) {
-            setExpiredDate(true);
-          } else if (new Date().getHours() === formData.day.expirationTime.split(':')[0]) {
-            if (new Date().getMinutes() > formData.day.expirationTime.split(':')[1]) {
-              setExpiredDate(true);
+        if (formData.day.expired === 'done') {
+          setCheck(true);
+          setExpiredDate('done');
+        } else {
+          if (new Date().toLocaleDateString() > formData.day.expirationDate) {
+            setExpiredDate('expired');
+          } else if (new Date().toLocaleDateString() === formData.day.expirationDate) {
+            if (new Date().getHours() > formData.day.expirationTime.split(':')[0]) {
+              setExpiredDate('expired');
+            } else if (new Date().getHours() === formData.day.expirationTime.split(':')[0]) {
+              if (new Date().getMinutes() > formData.day.expirationTime.split(':')[1]) {
+                setExpiredDate('expired');
+              } else {
+                setExpiredDate('');
+              }
             } else {
-              setExpiredDate(false);
+              setExpiredDate('');
             }
           } else {
-            setExpiredDate(false);
+            setExpiredDate('');
           }
-        } else {
-          setExpiredDate(false);
         }
       }
     }
-
-    socket.on('task', (data) => {
-      if (new Date().toLocaleDateString() > data.day.expirationDate) {
-        setExpiredDate(true);
-      } else if (new Date().toLocaleDateString() === data.day.expirationDate) {
-        if (new Date().getHours() > data.day.expirationTime.split(':')[0]) {
-          setExpiredDate(true);
-        } else if (new Date().getHours() === data.day.expirationTime.split(':')[0]) {
-          if (new Date().getMinutes() > data.day.expirationTime.split(':')[1]) {
-            setExpiredDate(true);
-          } else {
-            setExpiredDate(false);
-          }
-        } else {
-          setExpiredDate(false);
-        }
-      } else {
-        setExpiredDate(false);
-      }
-    });
   }, [dialogForm, formData, bId, status, formDataID]);
 
   return (
@@ -275,7 +276,7 @@ const TForm = (props) => {
             <Grid sx={{ display: 'none' }}>
               <Typography variant="h4">Id:</Typography>
 
-              <OutlinedInput id="_id" name="_id" value={task._id} onChange={handleChange} variant="standard" />
+              <OutlinedInput id="_id" name="_id" value={taskForm._id} onChange={handleChange} variant="standard" />
             </Grid>
 
             <Grid container alignItems="center" sx={{ height: 70 }}>
@@ -283,7 +284,14 @@ const TForm = (props) => {
                 Task title:
               </Typography>
 
-              <OutlinedInput id="task" type="text" value={task.task} name="task" onChange={handleChange} placeholder="Enter task title" />
+              <OutlinedInput
+                id="task"
+                type="text"
+                value={taskForm.task}
+                name="task"
+                onChange={handleChange}
+                placeholder="Enter task title"
+              />
             </Grid>
 
             <Grid container alignItems="center" justifyContent="space-evenly" sx={{ mt: 4 }}>
@@ -307,16 +315,16 @@ const TForm = (props) => {
                 <Grid sx={{ display: 'none' }}>
                   <Typography variant="h4">Id:</Typography>
 
-                  <OutlinedInput id="_id" name="_id" value={task._id} onChange={handleChange} variant="standard" />
+                  <OutlinedInput id="_id" name="_id" value={taskForm._id} onChange={handleChange} variant="standard" />
                 </Grid>
 
                 <Grid item display="flex" alignItems="center">
                   <IconCreditCard />
 
-                  <textarea id="task" className="task-title" value={task.task} name="task" onChange={handleChange} />
+                  <textarea id="task" className="task-title" value={taskForm.task} name="task" onChange={handleChange} />
                 </Grid>
 
-                {show === task._id && showMember && (
+                {show === taskForm._id && showMember && (
                   <Grid>
                     <Grid container alignItems="center" sx={{ mt: 2, mb: 1 }}>
                       <IconUsers />
@@ -332,7 +340,7 @@ const TForm = (props) => {
                   </Grid>
                 )}
 
-                {task.day && task.day.startTime !== '' && task.day.expirationDate !== '' && task.day.expirationTime !== '' && (
+                {taskForm.day && taskForm.day.startTime !== '' && taskForm.day.expirationDate !== '' && taskForm.day.expirationTime !== '' && (
                   <Grid container alignItems="center" sx={{ mt: 2, mb: 1 }}>
                     <Grid item display="flex" alignItems="center">
                       <IconClock />
@@ -345,9 +353,9 @@ const TForm = (props) => {
                     <Checkbox checked={check} onChange={handleCheck} />
 
                     <Typography color="black" variant="h5">
-                      {task.day.startTime} - {task.day.expirationDate} at {task.day.expirationTime}
-                      {check === false && expiredDate === true && <Chip sx={{ ml: 1 }} size="small" label="expired" color="error" />}
-                      {check === true && <Chip sx={{ ml: 1 }} size="small" label="done" color="success" />}
+                      {taskForm.day.startTime} - {taskForm.day.expirationDate} at {taskForm.day.expirationTime}
+                      {check === false && expiredDate === 'expired' && <Chip sx={{ ml: 1 }} size="small" label="expired" color="error" />}
+                      {check === true && expiredDate === 'done' && <Chip sx={{ ml: 1 }} size="small" label="done" color="success" />}
                     </Typography>
                   </Grid>
                 )}
@@ -388,7 +396,7 @@ const TForm = (props) => {
                 </Grid>
 
                 <Grid>
-                  {show === task._id && showAttach && (
+                  {show === taskForm._id && showAttach && (
                     <Grid container alignItems="center" sx={{ mt: 4 }}>
                       <IconPaperclip />
 
@@ -398,7 +406,7 @@ const TForm = (props) => {
                     </Grid>
                   )}
 
-                  <FileUpload taskID={task._id} show={showAttach} />
+                  <FileUpload taskID={taskForm._id} show={showAttach} />
                 </Grid>
               </Grid>
 
@@ -407,7 +415,7 @@ const TForm = (props) => {
                   Add to card
                 </Typography>
 
-                <MenuItem sx={{ mb: 2, boxShadow: 2 }} onClick={() => handleShowMember(task._id)}>
+                <MenuItem sx={{ mb: 2, boxShadow: 2 }} onClick={() => handleShowMember(taskForm._id)}>
                   <Grid sx={{ mr: 1 }}>
                     <IconUser size={16} />
                   </Grid>
@@ -420,9 +428,15 @@ const TForm = (props) => {
                   </Grid>
                   Day
                 </MenuItem>
-                <CalendarBtn task={task} anchorEl={anchorElCalendar} open={openCalendar} handleClose={handleCloseCalendar} />
+                <CalendarBtn
+                  task={taskForm}
+                  anchorEl={anchorElCalendar}
+                  open={openCalendar}
+                  handleClose={handleCloseCalendar}
+                  expiredDate={expiredDate}
+                />
 
-                <MenuItem sx={{ mb: 2, boxShadow: 2 }} onClick={() => handleShowAttach(task._id)}>
+                <MenuItem sx={{ mb: 2, boxShadow: 2 }} onClick={() => handleShowAttach(taskForm._id)}>
                   <Grid sx={{ mr: 1 }}>
                     <IconPaperclip size={16} />
                   </Grid>
@@ -439,14 +453,14 @@ const TForm = (props) => {
                   </Grid>
                   Move
                 </MenuItem>
-                <MoveTaskBtn task={task} anchorEl={anchorElTask} open={openMoveTask} handleClose={handleCloseMoveTask} />
+                <MoveTaskBtn task={taskForm} anchorEl={anchorElTask} open={openMoveTask} handleClose={handleCloseMoveTask} />
 
-                <MenuItem sx={{ mb: 2, boxShadow: 2 }}>
+                {/* <MenuItem sx={{ mb: 2, boxShadow: 2 }}>
                   <Grid sx={{ mr: 1 }}>
                     <IconArchive size={16} />
                   </Grid>
                   Storage
-                </MenuItem>
+                </MenuItem> */}
 
                 <AnimateButton>
                   <Button sx={{ mt: 4, ml: 3 }} disableElevation size="small" type="submit" variant="contained" color="primary">

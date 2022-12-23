@@ -2,7 +2,19 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 // material-ui
-import { Typography, Grid, Table, TableBody, TableRow, TableCell, TableHead, Avatar, TablePagination, TableContainer } from '@mui/material';
+import {
+  Typography,
+  Grid,
+  Table,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHead,
+  Avatar,
+  TablePagination,
+  TableContainer,
+  Chip,
+} from '@mui/material';
 
 // icons
 import { IconList, IconUsers } from '@tabler/icons';
@@ -44,6 +56,27 @@ const lists = [
   },
 ];
 
+const date = [
+  {
+    id: 0,
+    label: 'No expiration date',
+    iconColor: 'grey',
+    task: [],
+  },
+  {
+    id: 1,
+    label: 'Task done',
+    iconColor: 'green',
+    task: [],
+  },
+  {
+    id: 2,
+    label: 'Out of date',
+    iconColor: 'red',
+    task: [],
+  },
+];
+
 const Work = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
@@ -60,6 +93,9 @@ const Work = () => {
 
   const [boardID, setBoardID] = useState();
   const [check, setCheck] = useState(false);
+
+  const [dateID, setDateID] = useState();
+  const [checkDate, setCheckDate] = useState(false);
 
   const loadData = (id) => {
     workSpaceAPI.getAll().then((result) => {
@@ -92,14 +128,41 @@ const Work = () => {
 
     taskAPI.getAll().then((result) => {
       let arr = [];
+      let noDate = [];
+      let taskDone = [];
+      let expired = [];
 
       result.data.data.map((res) => {
         res.member.map((value) => {
           if (value._id === id) {
             arr.push(res);
+
+            if (res.day) {
+              if (res.day.expired === 'done') {
+                taskDone.push(res);
+              } else if (res.day.startTime !== '' && res.day.expirationDate !== '' && res.day.expirationTime !== '') {
+                if (new Date().toLocaleDateString() > res.day.expirationDate) {
+                  expired.push(res);
+                } else if (new Date().toLocaleDateString() === res.day.expirationDate) {
+                  if (new Date().getHours() > res.day.expirationTime.split(':')[0]) {
+                    expired.push(res);
+                  } else if (new Date().getHours() === res.day.expirationTime.split(':')[0]) {
+                    if (new Date().getMinutes() > res.day.expirationTime.split(':')[1]) {
+                      expired.push(res);
+                    }
+                  }
+                }
+              }
+            } else {
+              noDate.push(res);
+            }
           }
         });
       });
+
+      date[0].task = noDate;
+      date[1].task = taskDone;
+      date[2].task = expired;
 
       setTask(arr);
     });
@@ -123,7 +186,7 @@ const Work = () => {
     setTaskPage(0);
   };
 
-  const handleFilterMember = (event, id) => {
+  const handleFilterBoard = (event, id) => {
     setBoardID(id);
     setCheck(event.target.checked);
 
@@ -145,6 +208,35 @@ const Work = () => {
 
       if (event.target.checked === true) {
         setTask(filter);
+      } else {
+        setTask(arr);
+      }
+    });
+  };
+
+  const handleFilterDate = (event, id) => {
+    setDateID(id);
+    setCheckDate(event.target.checked);
+
+    taskAPI.getAll().then((result) => {
+      let arr = [];
+
+      result.data.data.map((res) => {
+        res.member.map((value) => {
+          if (value._id === userId) {
+            arr.push(res);
+          }
+        });
+      });
+
+      if (event.target.checked === true) {
+        if (id === 0) {
+          setTask(date[0].task);
+        } else if (id === 1) {
+          setTask(date[1].task);
+        } else if (id === 2) {
+          setTask(date[2].task);
+        }
       } else {
         setTask(arr);
       }
@@ -261,7 +353,17 @@ const Work = () => {
             </Typography>
           </Grid>
 
-          <FilterBtn page="user" id={boardID} check={check} board={board} handleFilterMember={handleFilterMember} />
+          <FilterBtn
+            page="user"
+            boardId={boardID}
+            checkBoard={check}
+            board={board}
+            handleFilterBoard={handleFilterBoard}
+            checkDate={checkDate}
+            date={date}
+            dateId={dateID}
+            handleFilterDate={handleFilterDate}
+          />
         </Grid>
 
         {task.length === 0 ? (

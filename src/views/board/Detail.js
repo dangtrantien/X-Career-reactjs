@@ -54,6 +54,12 @@ const date = [
   },
   {
     id: 1,
+    label: 'Task done',
+    iconColor: 'green',
+    task: [],
+  },
+  {
+    id: 2,
     label: 'Out of date',
     iconColor: 'red',
     task: [],
@@ -94,18 +100,23 @@ const Detail = () => {
   const loadData = (id) => {
     boardAPI.getByID(id).then((result) => {
       let noDate = [];
+      let taskDone = [];
       let expired = [];
 
       result.data[0].tasks.map((res) => {
-        if (res.day && res.day.startTime !== '' && res.day.expirationDate !== '' && res.day.expirationTime !== '') {
-          if (new Date().toLocaleDateString() > res.day.expirationDate) {
-            expired.push(res);
-          } else if (new Date().toLocaleDateString() === res.day.expirationDate) {
-            if (new Date().getHours() > res.day.expirationTime.split(':')[0]) {
+        if (res.day) {
+          if (res.day.expired === 'done') {
+            taskDone.push(res);
+          } else if (res.day.startTime !== '' && res.day.expirationDate !== '' && res.day.expirationTime !== '') {
+            if (new Date().toLocaleDateString() > res.day.expirationDate) {
               expired.push(res);
-            } else if (new Date().getHours() === res.day.expirationTime.split(':')[0]) {
-              if (new Date().getMinutes() > res.day.expirationTime.split(':')[1]) {
+            } else if (new Date().toLocaleDateString() === res.day.expirationDate) {
+              if (new Date().getHours() > res.day.expirationTime.split(':')[0]) {
                 expired.push(res);
+              } else if (new Date().getHours() === res.day.expirationTime.split(':')[0]) {
+                if (new Date().getMinutes() > res.day.expirationTime.split(':')[1]) {
+                  expired.push(res);
+                }
               }
             }
           }
@@ -115,7 +126,8 @@ const Detail = () => {
       });
 
       date[0].task = noDate;
-      date[1].task = expired;
+      date[1].task = taskDone;
+      date[2].task = expired;
 
       setBoard(result.data[0]);
       setBgImg(result.data[0].bgImg);
@@ -179,6 +191,8 @@ const Detail = () => {
           setTask(date[0].task);
         } else if (id === 1) {
           setTask(date[1].task);
+        } else if (id === 2) {
+          setTask(date[2].task);
         }
       } else {
         setTask(result.data[0].tasks);
@@ -218,15 +232,15 @@ const Detail = () => {
             <FilterBtn
               page="board"
               userId={userID}
-              check={check}
+              checkMember={check}
               checkNone={checkNone}
               member={board.member}
               handleFilterMemberNone={handleFilterMemberNone}
               handleFilterMember={handleFilterMember}
-              date={date}
-              dateID={dateID}
-              handleFilterDate={handleFilterDate}
               checkDate={checkDate}
+              date={date}
+              dateId={dateID}
+              handleFilterDate={handleFilterDate}
             />
           </Grid>
 

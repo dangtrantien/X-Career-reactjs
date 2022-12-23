@@ -11,6 +11,7 @@ import {
   Chip,
   ClickAwayListener,
   Divider,
+  Grid,
   List,
   ListItemButton,
   ListItemIcon,
@@ -165,16 +166,22 @@ const ProfileSection = () => {
                   <Box sx={{ p: 2, pb: 0 }}>
                     <Stack>
                       <Stack spacing={0.5}>
-                        <Typography variant="h4">Good Morning</Typography>
+                        <Typography variant="subtitle2">Account</Typography>
 
-                        <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
-                          {user.name}
-                        </Typography>
+                        <Grid container alignItems="center">
+                          <Avatar src={user.avatar.data} sx={{ mr: 2, width: 50, height: 50 }} />
+
+                          <Grid>
+                            <Typography component="span" variant="h4" sx={{ fontWeight: 400 }}>
+                              {user.name}
+                            </Typography>
+
+                            <Typography variant="subtitle2">{user.email}</Typography>
+                          </Grid>
+                        </Grid>
                       </Stack>
-
-                      <Typography variant="subtitle2">{user.email}</Typography>
                     </Stack>
-                    <Divider />
+                    <Divider sx={{ mt: 1 }} />
                   </Box>
 
                   <List

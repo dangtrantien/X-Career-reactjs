@@ -24,7 +24,7 @@ const socket = io(host, {
 });
 
 const CalendarBtn = (props) => {
-  const { task, anchorEl, open, handleClose } = props;
+  const { task, anchorEl, open, handleClose, expiredDate } = props;
 
   const [time, setTime] = useState(new Date());
 
@@ -83,6 +83,7 @@ const CalendarBtn = (props) => {
         startTime: startTime,
         expirationDate: expirationDate,
         expirationTime: expirationTime,
+        expired: expiredDate,
       },
     };
 
@@ -295,6 +296,7 @@ CalendarBtn.propTypes = {
   anchorEl: PropTypes.any,
   open: PropTypes.any,
   handleClose: PropTypes.any,
+  expiredDate: PropTypes.any,
 };
 
 export default CalendarBtn;
