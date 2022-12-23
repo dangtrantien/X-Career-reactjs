@@ -20,7 +20,7 @@ import CForm from './comment/CommentForm';
 // ==============================|| FILE UPLOAD ||============================== //
 const uploadAPI = new UploadAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

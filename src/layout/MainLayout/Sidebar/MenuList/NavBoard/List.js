@@ -21,7 +21,7 @@ import { host } from 'services/baseAPI';
 const boardAPI = new BoardAPI();
 const workSpaceAPI = new WorkSpaceAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

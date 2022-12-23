@@ -14,7 +14,7 @@ import { host } from 'services/baseAPI';
 // ==============================|| BOARD LIST ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

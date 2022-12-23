@@ -12,7 +12,7 @@ import { host } from 'services/baseAPI';
 // ==============================|| PERSONAL INFOMATION ||============================== //
 const userAPI = new UserAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

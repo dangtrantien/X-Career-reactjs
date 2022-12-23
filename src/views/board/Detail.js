@@ -18,7 +18,7 @@ import { host } from 'services/baseAPI';
 // ==============================|| BOARD DETAIL ||============================== //
 const boardAPI = new BoardAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

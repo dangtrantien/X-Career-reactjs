@@ -23,7 +23,7 @@ const commentAPI = new CommentAPI();
 const userAPI = new UserAPI();
 const uploadAPI = new UploadAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 
@@ -35,6 +35,8 @@ const InputComment = (props) => {
 
   const [inputStr, setInputStr] = useState('');
   const [sender, setSender] = useState({});
+
+  const [fileStr, setFileStr] = useState('');
 
   const [showEmoji, setShowEmoji] = useState(false);
   const [file, setFile] = useState(false);
@@ -58,7 +60,8 @@ const InputComment = (props) => {
           socket.emit('upload', res.data.data);
 
           setFile(true);
-          setInputStr(res.data.data.file);
+          setInputStr(`[${res.data.data.file.name}]`);
+          setFileStr(res.data.data.file);
         }
       })
       .catch(() => {
@@ -94,7 +97,11 @@ const InputComment = (props) => {
     };
 
     if (file === true) {
-      comment.message = fileMessage;
+      if (fileMessage) {
+        comment.message = fileMessage;
+      } else {
+        comment.message = fileStr;
+      }
     }
 
     commentAPI

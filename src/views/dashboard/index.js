@@ -18,7 +18,7 @@ import { host } from 'services/baseAPI';
 // ==============================|| DEFAULT DASHBOARD ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

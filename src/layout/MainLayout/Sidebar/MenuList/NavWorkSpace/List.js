@@ -18,7 +18,7 @@ import { host } from 'services/baseAPI';
 // ==============================|| SIDEBAR WORK SPACE LIST ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

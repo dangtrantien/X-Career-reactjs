@@ -39,7 +39,7 @@ const taskAPI = new TaskAPI();
 const boardAPI = new BoardAPI();
 const uploadAPI = new UploadAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

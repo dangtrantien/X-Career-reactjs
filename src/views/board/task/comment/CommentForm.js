@@ -16,7 +16,7 @@ import { host } from 'services/baseAPI';
 // ==============================|| COMMENT FORM ||============================== //
 const commentAPI = new CommentAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

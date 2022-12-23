@@ -2,19 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 
 // material-ui
-import {
-  Typography,
-  Grid,
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableHead,
-  Avatar,
-  TablePagination,
-  TableContainer,
-  Chip,
-} from '@mui/material';
+import { Typography, Grid, Table, TableBody, TableRow, TableCell, TableHead, Avatar, TablePagination, TableContainer } from '@mui/material';
 
 // icons
 import { IconList, IconUsers } from '@tabler/icons';
@@ -33,7 +21,7 @@ const workSpaceAPI = new WorkSpaceAPI();
 const boardAPI = new BoardAPI();
 const taskAPI = new TaskAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

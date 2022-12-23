@@ -18,7 +18,7 @@ import { host } from 'services/baseAPI';
 // ==============================|| TASK LIST ||============================== //
 const taskAPI = new TaskAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

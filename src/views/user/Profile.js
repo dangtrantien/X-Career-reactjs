@@ -15,7 +15,7 @@ import { host } from 'services/baseAPI';
 // ==============================|| USER PROFILE PAGE ||============================== //
 const userAPI = new UserAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

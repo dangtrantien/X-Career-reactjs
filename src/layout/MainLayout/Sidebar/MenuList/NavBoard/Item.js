@@ -33,7 +33,7 @@ import { host } from 'services/baseAPI';
 // ==============================|| SIDEBAR BOARD LIST ITEMS ||============================== //
 const boardAPI = new BoardAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 

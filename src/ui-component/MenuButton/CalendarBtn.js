@@ -19,7 +19,7 @@ import { host } from 'services/baseAPI';
 // ==============================|| CALENDAR BUTTON ||============================== //
 const taskAPI = new TaskAPI();
 const socket = io(host, {
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
   withCredentials: true,
 });
 
