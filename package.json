@@ -2,7 +2,7 @@
   "name": "x-career-reactjs",
   "version": "3.2.0",
   "private": true,
-  "homepage": "https://dangtrantien.github.io/berry-reactjs",
+  "homepage": "https://berry.onrender.com",
   "dependencies": {
     "@emotion/cache": "^11.9.3",
     "@emotion/react": "^11.9.3",

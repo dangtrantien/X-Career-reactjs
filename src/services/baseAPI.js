@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const host = 'https://x-career-nodejs-bx4avucmoa-as.a.run.app';
+export const host = 'https://x-career-06-team1-be.onrender.com';
 // export const host = 'http://localhost:3002';
 
 export class BaseAPI {
