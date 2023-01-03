@@ -164,7 +164,9 @@ const CalendarBtn = (props) => {
         setExpirationDate(task.day.expirationDate);
         setExpirationTime(task.day.expirationTime);
       }
-    } else if (checkStart === false) {
+    }
+
+    if (checkStart === false) {
       setStartTime(new Date().toLocaleDateString());
     }
   }, [task, checkStart, time]);
