@@ -229,6 +229,8 @@ const TForm = (props) => {
         if (arr.length !== 0) {
           setShow(formData._id);
           setShowAttach(true);
+        } else {
+          setShowAttach(false);
         }
       });
 
