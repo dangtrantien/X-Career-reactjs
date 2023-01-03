@@ -9,16 +9,7 @@ import '../../../../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.cs
 import { Button, OutlinedInput, Typography, Grid, Dialog, Box, DialogContent, MenuList, MenuItem, Checkbox, Chip } from '@mui/material';
 
 // icons/img
-import {
-  IconAlignJustified,
-  IconCreditCard,
-  IconPaperclip,
-  IconUser,
-  IconUsers,
-  IconClock,
-  IconArrowBigRightLines,
-  IconArchive,
-} from '@tabler/icons';
+import { IconAlignJustified, IconCreditCard, IconPaperclip, IconUser, IconUsers, IconClock, IconArrowBigRightLines } from '@tabler/icons';
 
 // project imports
 import swal from 'sweetalert';

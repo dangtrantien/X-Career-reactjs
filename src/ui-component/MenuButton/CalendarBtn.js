@@ -94,7 +94,7 @@ const CalendarBtn = (props) => {
     if (!startTimeFormat || !expirationDateFormat) {
       swal({
         title: 'Please enter correct date format.',
-        text: "Example '12/22/2023'.",
+        text: `Example '${new Date().toLocaleDateString()}'.`,
         icon: 'warning',
         buttons: 'Ok',
       });
