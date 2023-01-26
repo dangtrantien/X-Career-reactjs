@@ -157,29 +157,18 @@ const MoveTaskBtn = (props) => {
           Move Task
         </DialogTitle>
 
-        <DialogContent spacing={2}>
-          <InputLabel>Board</InputLabel>
-          <Select fullWidth native id="board" value={boardID} onChange={handleBoardChange}>
-            {board.map((data) => (
-              <option key={data._id} value={data._id}>
-                {data._id === task.boardID ? `${data.name} (currently)` : data.name}
+        <DialogContent>
+          <InputLabel>List</InputLabel>
+          <Select fullWidth native id="list" value={listID} onChange={handleListChange}>
+            {lists.map((data) => (
+              <option key={data.id} value={data.id}>
+                {data.id === task.status ? `${data.title} (currently)` : data.title}
               </option>
             ))}
           </Select>
 
-          <Grid sx={{ my: 2 }}>
-            <InputLabel>List</InputLabel>
-            <Select fullWidth native id="list" value={listID} onChange={handleListChange}>
-              {lists.map((data) => (
-                <option key={data.id} value={data.id}>
-                  {data.id === task.status ? `${data.title} (currently)` : data.title}
-                </option>
-              ))}
-            </Select>
-          </Grid>
-
           <AnimateButton>
-            <Button disableElevation size="small" type="submit" variant="contained" color="primary">
+            <Button sx={{ mt: 2 }} disableElevation size="small" type="submit" variant="contained" color="primary">
               Move
             </Button>
           </AnimateButton>
