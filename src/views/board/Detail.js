@@ -216,7 +216,9 @@ const Detail = () => {
     });
 
     socket.on('task', () => {
-      loadData(boardId);
+      boardAPI.getByID(boardId).then((result) => {
+        setTask(result.data[0].tasks);
+      });
     });
   }, [boardId]);
 
