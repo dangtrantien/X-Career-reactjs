@@ -32,14 +32,16 @@ const BoardList = ({ id, page }) => {
       let arr = [];
       let count = 0;
 
-      result.data[0].boards.map((res) => {
-        res.member.map((data) => {
-          if (data._id === userId) {
-            arr.push(res);
-            count++;
-          }
+      if (result.data[0].boards) {
+        result.data[0].boards.map((res) => {
+          res.member.map((data) => {
+            if (data._id === userId) {
+              arr.push(res);
+              count++;
+            }
+          });
         });
-      });
+      }
 
       setBoard(arr);
       setCount(count);

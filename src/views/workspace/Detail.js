@@ -35,12 +35,14 @@ const Detail = () => {
   const [openB, setOpenB] = useState(false);
 
   const [workspace, setWorkSpace] = useState({});
-  const [member, setMember] = useState();
+  const [member, setMember] = useState([]);
 
   const loadData = (id) => {
     workSpaceAPI.getByID(id).then((result) => {
       setWorkSpace(result.data[0]);
-      setMember(result.data[0].member.length);
+      if (result.data[0].member) {
+        setMember(result.data[0].member.length);
+      }
     });
   };
 

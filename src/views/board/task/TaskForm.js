@@ -112,13 +112,16 @@ const TForm = (props) => {
       task: data.get('task'),
       describe: describe,
       member: TMember,
-      day: {
+    };
+
+    if (taskForm.day) {
+      task.day = {
         startTime: taskForm.day.startTime,
         expirationDate: taskForm.day.expirationDate,
         expirationTime: taskForm.day.expirationTime,
         expired: check === true ? 'done' : '',
-      },
-    };
+      };
+    }
 
     if (task.task === '') {
       swal({

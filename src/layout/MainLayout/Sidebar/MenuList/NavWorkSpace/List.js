@@ -38,14 +38,16 @@ const WorkSpaceList = () => {
       const arr = [];
       let count = 0;
 
-      result.data[0].boards.map((value) => {
-        value.member.map((user) => {
-          if (user._id === userId) {
-            arr.push(value);
-            count++;
-          }
+      if (result.data[0].boards) {
+        result.data[0].boards.map((value) => {
+          value.member.map((user) => {
+            if (user._id === userId) {
+              arr.push(value);
+              count++;
+            }
+          });
         });
-      });
+      }
 
       setBoard(arr);
       setWorkSpace(result.data[0]);

@@ -50,8 +50,6 @@ const NavWorkSpaceItem = ({ item, wsId }) => {
           .deleteByID(id)
           .then((res) => {
             if (res.status === 200) {
-              socket.emit('board', res.data);
-
               //Thông báo thành công
               swal({
                 text: 'Successfully delete board.',
@@ -59,6 +57,7 @@ const NavWorkSpaceItem = ({ item, wsId }) => {
                 timer: 2000,
                 icon: 'success',
               });
+
               navigate(`/w/detail/${wsId}`, { replace: true });
             }
           })
