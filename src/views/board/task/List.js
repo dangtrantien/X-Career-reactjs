@@ -88,7 +88,7 @@ const TaskList = ({ list, item, bId }) => {
 
         <Grid
           sx={{
-            height: 285,
+            height: 355,
             overflowY: 'hidden',
             '&:hover': {
               overflowY: 'auto',
