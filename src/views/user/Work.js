@@ -8,13 +8,13 @@ import { Typography, Grid, Table, TableBody, TableRow, TableCell, TableHead, Ava
 import { IconList, IconUsers } from '@tabler/icons';
 
 // project import
-import WorkSpaceAPI from 'services/WorkSpaceAPI';
-import BoardAPI from 'services/BoardAPI';
-import TaskAPI from 'services/TaskAPI';
-import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
-import FilterBtn from 'ui-component/MenuButton/FilterBtn';
+import WorkSpaceAPI from '../../services/WorkSpaceAPI';
+import BoardAPI from '../../services/BoardAPI';
+import TaskAPI from '../../services/TaskAPI';
+import BackgroundLetterAvatars from '../../ui-component/BackgroundLetterAvatar';
+import FilterBtn from '../../ui-component/MenuButton/FilterBtn';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../services/baseAPI';
 
 // ==============================|| WORK ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();

@@ -5,12 +5,12 @@ import { useParams } from 'react-router';
 import { Avatar, Button, Typography, Grid, ButtonGroup } from '@mui/material';
 
 // project import
-import UserAPI from 'services/UserAPI';
+import UserAPI from '../../services/UserAPI';
 import EditProfile from './EditProfile';
 import PersonalInfo from './PersonalInfomation';
 import Work from './Work';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../services/baseAPI';
 
 // ==============================|| USER PROFILE PAGE ||============================== //
 const userAPI = new UserAPI();

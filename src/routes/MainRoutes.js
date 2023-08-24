@@ -1,15 +1,15 @@
 import { lazy } from 'react';
 
 // project imports
-import MainLayout from 'layout/MainLayout';
-import Loadable from 'ui-component/Loadable';
-import { RequireAuth } from 'utils/requireAuth';
+import MainLayout from '../layout/MainLayout';
+import Loadable from '../ui-component/Loadable';
+import { RequireAuth } from '../utils/requireAuth';
 
 // dashboard routing
-const DashboardDefault = Loadable(lazy(() => import('views/dashboard')));
+const DashboardDefault = Loadable(lazy(() => import('../views/dashboard')));
 
 // workspace routing
-const WorkSpace = Loadable(lazy(() => import('views/workspace/Detail')));
+const WorkSpace = Loadable(lazy(() => import('../views/workspace/Detail')));
 
 // ==============================|| DASHBOARD ROUTING ||============================== //
 

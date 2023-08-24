@@ -1,12 +1,12 @@
 import { lazy } from 'react';
 
 // project imports
-import MainLayout from 'layout/MainLayout';
-import Loadable from 'ui-component/Loadable';
-import { RequireAuth } from 'utils/requireAuth';
+import MainLayout from '../layout/MainLayout';
+import Loadable from '../ui-component/Loadable';
+import { RequireAuth } from '../utils/requireAuth';
 
 // workspace routing
-const WorkSpace = Loadable(lazy(() => import('views/workspace/Detail')));
+const WorkSpace = Loadable(lazy(() => import('../views/workspace/Detail')));
 
 // ==============================|| WORK SPACE ROUTING ||============================== //
 

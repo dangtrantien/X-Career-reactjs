@@ -8,8 +8,8 @@ import { useTheme } from '@mui/material/styles';
 import { Avatar, ListItemButton, ListItemIcon, ListItemText, Typography, useMediaQuery } from '@mui/material';
 
 // project imports
-import { MENU_OPEN, SET_MENU } from 'store/actions';
-import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
+import { MENU_OPEN, SET_MENU } from '../../../../../store/actions';
+import BackgroundLetterAvatars from '../../../../../ui-component/BackgroundLetterAvatar';
 
 // ==============================|| SIDEBAR DASHBOARD LIST ITEMS ||============================== //
 

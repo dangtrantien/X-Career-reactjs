@@ -9,8 +9,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 // project imports
-import WSForm from 'views/workspace/WorkSpaceForm';
-import BForm from 'views/board/BoardForm';
+import WSForm from '../../views/workspace/WorkSpaceForm';
+import BForm from '../../views/board/BoardForm';
 
 // ==============================|| CREATE BUTTON ||============================== //
 

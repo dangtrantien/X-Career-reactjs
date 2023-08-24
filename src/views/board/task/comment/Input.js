@@ -10,13 +10,13 @@ import Picker from 'emoji-picker-react';
 
 // project imports
 import swal from 'sweetalert';
-import CommentAPI from 'services/CommentAPI';
-import UserAPI from 'services/UserAPI';
-import UploadAPI from 'services/UploadAPI';
-import AnimateButton from 'ui-component/extended/AnimateButton';
-import EndcodeFileBase64 from 'utils/endcodeFileBase64';
+import CommentAPI from '../../../../services/CommentAPI';
+import UserAPI from '../../../../services/UserAPI';
+import UploadAPI from '../../../../services/UploadAPI';
+import AnimateButton from '../../../../ui-component/extended/AnimateButton';
+import EndcodeFileBase64 from '../../../../utils/endcodeFileBase64';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../../../services/baseAPI';
 
 // ==============================|| INPUT COMMENT ||============================== //
 const commentAPI = new CommentAPI();

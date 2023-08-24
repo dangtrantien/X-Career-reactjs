@@ -26,11 +26,11 @@ import {
 import { IconId, IconLogout, IconSettings } from '@tabler/icons';
 
 // project imports
-import MainCard from 'ui-component/cards/MainCard';
-import Transitions from 'ui-component/extended/Transitions';
-import UserAPI from 'services/UserAPI';
+import MainCard from '../../../../ui-component/cards/MainCard';
+import Transitions from '../../../../ui-component/extended/Transitions';
+import UserAPI from '../../../../services/UserAPI';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../../../services/baseAPI';
 
 // ==============================|| PROFILE MENU ||============================== //
 const userAPI = new UserAPI();

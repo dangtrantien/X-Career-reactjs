@@ -6,14 +6,14 @@ import { useNavigate } from 'react-router-dom';
 import { Avatar, Typography, Stack, Grid, Button, Divider } from '@mui/material';
 
 // project imports
-import MainCard from 'ui-component/cards/MainCard';
-import WorkSpaceAPI from 'services/WorkSpaceAPI';
+import MainCard from '../../ui-component/cards/MainCard';
+import WorkSpaceAPI from '../../services/WorkSpaceAPI';
 import BoardList from './BoardList';
-import AnimateButton from 'ui-component/extended/AnimateButton';
-import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
-import WSForm from 'views/workspace/WorkSpaceForm';
+import AnimateButton from '../../ui-component/extended/AnimateButton';
+import BackgroundLetterAvatars from '../../ui-component/BackgroundLetterAvatar';
+import WSForm from '../workspace/WorkSpaceForm';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../services/baseAPI';
 
 // ==============================|| DEFAULT DASHBOARD ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();

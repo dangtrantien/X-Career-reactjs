@@ -8,10 +8,10 @@ import { IconPlus } from '@tabler/icons';
 
 // project imports
 import NavDashboardItem from './Item';
-import WorkSpaceAPI from 'services/WorkSpaceAPI';
-import WSForm from 'views/workspace/WorkSpaceForm';
+import WorkSpaceAPI from '../../../../../services/WorkSpaceAPI';
+import WSForm from '../../../../../views/workspace/WorkSpaceForm';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../../../../services/baseAPI';
 
 // ==============================|| SIDEBAR DASHBOARD LIST ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();

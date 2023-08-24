@@ -5,9 +5,9 @@ import { useState } from 'react';
 import { Avatar, Box, Button, Grid } from '@mui/material';
 
 // project import
-import AnimateButton from 'ui-component/extended/AnimateButton';
-import EndcodeFileBase64 from 'utils/endcodeFileBase64';
-import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
+import AnimateButton from './AnimateButton';
+import EndcodeFileBase64 from '../../utils/endcodeFileBase64';
+import BackgroundLetterAvatars from '../BackgroundLetterAvatar';
 
 // ==============================|| INPUT FILE BUTTON ||============================== //
 

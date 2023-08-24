@@ -10,15 +10,15 @@ import { IconPencil, IconTrash, IconUsers } from '@tabler/icons';
 
 // project imports
 import swal from 'sweetalert';
-import MainCard from 'ui-component/cards/MainCard';
-import WorkSpaceAPI from 'services/WorkSpaceAPI';
-import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
+import MainCard from '../../ui-component/cards/MainCard';
+import WorkSpaceAPI from '../../services/WorkSpaceAPI';
+import BackgroundLetterAvatars from '../../ui-component/BackgroundLetterAvatar';
 import WSForm from './WorkSpaceForm';
-import BForm from 'views/board/BoardForm';
-import AnimateButton from 'ui-component/extended/AnimateButton';
-import BoardList from 'views/dashboard/BoardList';
+import BForm from '../board/BoardForm';
+import AnimateButton from '../../ui-component/extended/AnimateButton';
+import BoardList from '../dashboard/BoardList';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../services/baseAPI';
 
 // ==============================|| WORKSPACE DETAIL ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();

@@ -18,12 +18,12 @@ import {
 
 // project import
 import swal from 'sweetalert';
-import UserAPI from 'services/UserAPI';
-import InputFileButton from 'ui-component/extended/InputFileButton';
-import EndcodeFileBase64 from 'utils/endcodeFileBase64';
-import AnimateButton from 'ui-component/extended/AnimateButton';
+import UserAPI from '../../services/UserAPI';
+import InputFileButton from '../../ui-component/extended/InputFileButton';
+import EndcodeFileBase64 from '../../utils/endcodeFileBase64';
+import AnimateButton from '../../ui-component/extended/AnimateButton';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../services/baseAPI';
 
 // ==============================|| EDIT USER PROFILE PAGE ||============================== //
 const userAPI = new UserAPI();

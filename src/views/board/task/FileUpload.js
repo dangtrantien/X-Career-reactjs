@@ -9,13 +9,13 @@ import { IconListDetails, IconPoint } from '@tabler/icons';
 
 // project imports
 import swal from 'sweetalert';
-import UploadAPI from 'services/UploadAPI';
-import AnimateButton from 'ui-component/extended/AnimateButton';
-import EndcodeFileBase64 from 'utils/endcodeFileBase64';
-import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
-import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import UploadAPI from '../../../services/UploadAPI';
+import AnimateButton from '../../../ui-component/extended/AnimateButton';
+import EndcodeFileBase64 from '../../../utils/endcodeFileBase64';
+import BackgroundLetterAvatars from '../../../ui-component/BackgroundLetterAvatar';
 import CForm from './comment/CommentForm';
+import io from 'socket.io-client';
+import { host } from '../../../services/baseAPI';
 
 // ==============================|| FILE UPLOAD ||============================== //
 const uploadAPI = new UploadAPI();

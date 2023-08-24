@@ -11,11 +11,11 @@ import { Avatar, Grid, ListItemButton, ListItemIcon, ListItemText, Typography, u
 import { IconTrash } from '@tabler/icons';
 
 // project imports
-import { MENU_OPEN, SET_MENU } from 'store/actions';
+import { MENU_OPEN, SET_MENU } from '../../../../../store/actions';
 import swal from 'sweetalert';
-import BoardAPI from 'services/BoardAPI';
+import BoardAPI from '../../../../../services/BoardAPI';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../../../../services/baseAPI';
 
 // ==============================|| SIDEBAR WORK SPACE LIST ITEMS ||============================== //
 const boardAPI = new BoardAPI();

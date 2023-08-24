@@ -9,11 +9,11 @@ import { Box, Grid, Button, Menu, DialogTitle, Select, DialogContent, InputLabel
 
 // project imports
 import swal from 'sweetalert';
-import BoardAPI from 'services/BoardAPI';
-import TaskAPI from 'services/TaskAPI';
-import AnimateButton from 'ui-component/extended/AnimateButton';
+import BoardAPI from '../../services/BoardAPI';
+import TaskAPI from '../../services/TaskAPI';
+import AnimateButton from '../extended/AnimateButton';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../services/baseAPI';
 
 // ==============================|| MOVE TASK BUTTON ||============================== //
 const boardAPI = new BoardAPI();

@@ -23,12 +23,12 @@ import {
 import { IconDots, IconPencil, IconTrash } from '@tabler/icons';
 
 // project imports
-import { MENU_OPEN, SET_MENU } from 'store/actions';
+import { MENU_OPEN, SET_MENU } from '../../../../../store/actions';
 import swal from 'sweetalert';
-import BoardAPI from 'services/BoardAPI';
-import BForm from 'views/board/BoardForm';
+import BoardAPI from '../../../../../services/BoardAPI';
+import BForm from '../../../../../views/board/BoardForm';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../../../../services/baseAPI';
 
 // ==============================|| SIDEBAR BOARD LIST ITEMS ||============================== //
 const boardAPI = new BoardAPI();

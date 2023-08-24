@@ -5,9 +5,9 @@ import { useParams } from 'react-router';
 import { Typography, Divider, Grid, Stack } from '@mui/material';
 
 // project import
-import UserAPI from 'services/UserAPI';
+import UserAPI from '../../services/UserAPI';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../services/baseAPI';
 
 // ==============================|| PERSONAL INFOMATION ||============================== //
 const userAPI = new UserAPI();

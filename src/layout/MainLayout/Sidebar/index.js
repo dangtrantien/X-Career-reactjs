@@ -13,7 +13,7 @@ import DashboardList from './MenuList/NavDashboard/List';
 import WorkSpaceList from './MenuList/NavWorkSpace/List';
 import BoardList from './MenuList/NavBoard/List';
 import LogoSection from '../LogoSection';
-import { drawerWidth } from 'store/constant';
+import { drawerWidth } from '../../../store/constant';
 
 // ==============================|| SIDEBAR DRAWER ||============================== //
 

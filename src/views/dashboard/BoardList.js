@@ -6,10 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardMedia, Grid, Typography } from '@mui/material';
 
 // project import
-import WorkSpaceAPI from 'services/WorkSpaceAPI';
-import BForm from 'views/board/BoardForm';
+import WorkSpaceAPI from '../../services/WorkSpaceAPI';
+import BForm from '../board/BoardForm';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../services/baseAPI';
 
 // ==============================|| BOARD LIST ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();

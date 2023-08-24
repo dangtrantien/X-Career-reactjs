@@ -1,12 +1,12 @@
 import { lazy } from 'react';
 
 // project imports
-import MainLayout from 'layout/MainLayout';
-import Loadable from 'ui-component/Loadable';
-import { RequireAuth } from 'utils/requireAuth';
+import MainLayout from '../layout/MainLayout';
+import Loadable from '../ui-component/Loadable';
+import { RequireAuth } from '../utils/requireAuth';
 
 // board routing
-const Board = Loadable(lazy(() => import('views/board/Detail')));
+const Board = Loadable(lazy(() => import('../views/board/Detail')));
 
 // ==============================|| BOARD ROUTING ||============================== //
 

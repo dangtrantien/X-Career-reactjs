@@ -13,17 +13,17 @@ import { IconAlignJustified, IconCreditCard, IconPaperclip, IconUser, IconUsers,
 
 // project imports
 import swal from 'sweetalert';
-import TaskAPI from 'services/TaskAPI';
-import BoardAPI from 'services/BoardAPI';
-import UploadAPI from 'services/UploadAPI';
-import AnimateButton from 'ui-component/extended/AnimateButton';
-import DialogForm from 'ui-component/extended/DialogForm';
-import AutocompleteBtn from 'ui-component/extended/AutocompleteBtn';
+import TaskAPI from '../../../services/TaskAPI';
+import BoardAPI from '../../../services/BoardAPI';
+import UploadAPI from '../../../services/UploadAPI';
+import AnimateButton from '../../../ui-component/extended/AnimateButton';
+import DialogForm from '../../../ui-component/extended/DialogForm';
+import AutocompleteBtn from '../../../ui-component/extended/AutocompleteBtn';
 import FileUpload from './FileUpload';
-import MoveTaskBtn from 'ui-component/MenuButton/MoveTaskBtn';
-import CalendarBtn from 'ui-component/MenuButton/CalendarBtn';
+import MoveTaskBtn from '../../../ui-component/MenuButton/MoveTaskBtn';
+import CalendarBtn from '../../../ui-component/MenuButton/CalendarBtn';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../../services/baseAPI';
 
 // ==============================|| BOARD FORM ||============================== //
 const taskAPI = new TaskAPI();

@@ -8,13 +8,13 @@ import { Box, Grid, Button, Menu, DialogTitle, DialogContent, Divider, Checkbox,
 
 // project imports
 import swal from 'sweetalert';
-import TaskAPI from 'services/TaskAPI';
-import AnimateButton from 'ui-component/extended/AnimateButton';
+import TaskAPI from '../../services/TaskAPI';
+import AnimateButton from '../extended/AnimateButton';
 import Calendar from 'react-calendar';
 import dayjs from 'dayjs';
-import { checkValidDate, checkValidTime } from 'utils/validateDateFormat';
+import { checkValidDate, checkValidTime } from '../../utils/validateDateFormat';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../services/baseAPI';
 
 // ==============================|| CALENDAR BUTTON ||============================== //
 const taskAPI = new TaskAPI();

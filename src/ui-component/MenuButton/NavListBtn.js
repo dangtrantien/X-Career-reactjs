@@ -10,11 +10,11 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 // project imports
-import WorkSpaceAPI from 'services/WorkSpaceAPI';
-import BoardAPI from 'services/BoardAPI';
-import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
+import WorkSpaceAPI from '../../services/WorkSpaceAPI';
+import BoardAPI from '../../services/BoardAPI';
+import BackgroundLetterAvatars from '../BackgroundLetterAvatar';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../services/baseAPI';
 
 // ==============================|| NAVIGATE LIST BUTTON ||============================== //
 const workSpaceAPI = new WorkSpaceAPI();

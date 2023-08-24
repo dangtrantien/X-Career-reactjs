@@ -8,10 +8,10 @@ import { Grid, Avatar, Typography } from '@mui/material';
 
 // project imports
 import swal from 'sweetalert';
-import CommentAPI from 'services/CommentAPI';
+import CommentAPI from '../../../../services/CommentAPI';
 import InputComment from './Input';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../../../services/baseAPI';
 
 // ==============================|| COMMENT FORM ||============================== //
 const commentAPI = new CommentAPI();

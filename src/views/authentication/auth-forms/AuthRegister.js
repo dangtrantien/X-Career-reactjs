@@ -8,7 +8,6 @@ import {
   Box,
   Button,
   Checkbox,
-  Divider,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -26,9 +25,8 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 
 // project imports
-import Google from 'assets/images/icons/social-google.svg';
-import AnimateButton from 'ui-component/extended/AnimateButton';
-import { strengthColor, strengthIndicator } from 'utils/password-strength';
+import AnimateButton from '../../../ui-component/extended/AnimateButton';
+import { strengthColor, strengthIndicator } from '../../../utils/password-strength';
 
 // assets
 import Visibility from '@mui/icons-material/Visibility';
@@ -36,7 +34,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 // components
 import swal from 'sweetalert';
-import UserAPI from 'services/UserAPI';
+import UserAPI from '../../../services/UserAPI';
 
 // ===========================|| JWT - REGISTER ||=========================== //
 const userAPI = new UserAPI();

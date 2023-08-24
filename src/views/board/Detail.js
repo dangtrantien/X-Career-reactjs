@@ -8,12 +8,12 @@ import { Avatar, Typography, Grid, Button, Tooltip, IconButton, Menu, MenuItem, 
 import { IconPencil } from '@tabler/icons';
 
 // project imports
-import BoardAPI from 'services/BoardAPI';
-import BForm from 'views/board/BoardForm';
+import BoardAPI from '../../services/BoardAPI';
+import BForm from '../board/BoardForm';
 import TaskList from './task/List';
-import FilterBtn from 'ui-component/MenuButton/FilterBtn';
+import FilterBtn from '../../ui-component/MenuButton/FilterBtn';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../services/baseAPI';
 
 // ==============================|| BOARD DETAIL ||============================== //
 const boardAPI = new BoardAPI();

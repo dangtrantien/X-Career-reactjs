@@ -2,10 +2,10 @@ import { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 
 // project imports
-import Loadable from 'ui-component/Loadable';
+import Loadable from '../ui-component/Loadable';
 
 // Page 404
-const ErrorPage = Loadable(lazy(() => import('views/ErrorPage')));
+const ErrorPage = Loadable(lazy(() => import('../views/ErrorPage')));
 
 // ==============================|| PAGE 404 ||============================== //
 

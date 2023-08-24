@@ -2,9 +2,9 @@
 import { Grid } from '@mui/material';
 
 // project import
-import AuthCardWrapper from 'views/authentication/AuthCardWrapper';
-import AuthWrapper1 from 'views/authentication/AuthWrapper1';
-import AuthChangePassword from 'views/authentication/auth-forms/AuthChangePassword';
+import AuthCardWrapper from '../authentication/AuthCardWrapper';
+import AuthWrapper1 from '../authentication/AuthWrapper1';
+import AuthChangePassword from '../authentication/auth-forms/AuthChangePassword';
 
 // ==============================|| USER CHANGE PASSWORD PAGE ||============================== //
 

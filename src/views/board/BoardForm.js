@@ -9,15 +9,15 @@ import { Button, OutlinedInput, Typography, Grid, Dialog, Box, DialogContent, Se
 
 // project imports
 import swal from 'sweetalert';
-import BoardAPI from 'services/BoardAPI';
-import WorkSpaceAPI from 'services/WorkSpaceAPI';
-import AnimateButton from 'ui-component/extended/AnimateButton';
-import InputFileButton from 'ui-component/extended/InputFileButton';
-import DialogForm from 'ui-component/extended/DialogForm';
-import EndcodeFileBase64 from 'utils/endcodeFileBase64';
-import AutocompleteBtn from 'ui-component/extended/AutocompleteBtn';
+import BoardAPI from '../../services/BoardAPI';
+import WorkSpaceAPI from '../../services/WorkSpaceAPI';
+import AnimateButton from '../../ui-component/extended/AnimateButton';
+import InputFileButton from '../../ui-component/extended/InputFileButton';
+import DialogForm from '../../ui-component/extended/DialogForm';
+import EndcodeFileBase64 from '../../utils/endcodeFileBase64';
+import AutocompleteBtn from '../../ui-component/extended/AutocompleteBtn';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../services/baseAPI';
 
 // ==============================|| BOARD FORM ||============================== //
 const boardAPI = new BoardAPI();

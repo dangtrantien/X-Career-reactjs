@@ -1,14 +1,14 @@
 import { lazy } from 'react';
 
 // project imports
-import MainLayout from 'layout/MainLayout';
-import Loadable from 'ui-component/Loadable';
-import { RequireAuth } from 'utils/requireAuth';
+import MainLayout from '../layout/MainLayout';
+import Loadable from '../ui-component/Loadable';
+import { RequireAuth } from '../utils/requireAuth';
 
 // user routing
-const Profile = Loadable(lazy(() => import('views/user/Profile')));
-const EditProfile = Loadable(lazy(() => import('views/user/EditProfile')));
-const ChangePassword = Loadable(lazy(() => import('views/user/ChangePassword')));
+const Profile = Loadable(lazy(() => import('../views/user/Profile')));
+const EditProfile = Loadable(lazy(() => import('../views/user/EditProfile')));
+const ChangePassword = Loadable(lazy(() => import('../views/user/ChangePassword')));
 
 // ==============================|| USER ROUTING ||============================== //
 

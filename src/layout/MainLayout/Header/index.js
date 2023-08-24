@@ -8,9 +8,8 @@ import { Avatar, Box, ButtonBase } from '@mui/material';
 import LogoSection from '../LogoSection';
 import SearchSection from './SearchSection';
 import ProfileSection from './ProfileSection';
-import NotificationSection from './NotificationSection';
-import NavListBtn from 'ui-component/MenuButton/NavListBtn';
-import CreateBtn from 'ui-component/MenuButton/CreateBtn';
+import NavListBtn from '../../../ui-component/MenuButton/NavListBtn';
+import CreateBtn from '../../../ui-component/MenuButton/CreateBtn';
 
 // icons
 import { IconMenu2 } from '@tabler/icons';

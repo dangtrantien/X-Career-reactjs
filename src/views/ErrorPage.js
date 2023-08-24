@@ -2,7 +2,7 @@ import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
 import { Button, Typography, Container, Box } from '@mui/material';
-import svg404 from 'assets/images/illustration_404.svg';
+import svg404 from '../assets/images/illustration_404.svg';
 
 // ----------------------------------------------------------------------
 

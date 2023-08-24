@@ -10,12 +10,12 @@ import { IconPlus } from '@tabler/icons';
 
 // project imports
 import NavWorkSpaceItem from './Item';
-import WorkSpaceAPI from 'services/WorkSpaceAPI';
-import BoardAPI from 'services/BoardAPI';
-import BForm from 'views/board/BoardForm';
-import BackgroundLetterAvatars from 'ui-component/BackgroundLetterAvatar';
+import WorkSpaceAPI from '../../../../../services/WorkSpaceAPI';
+import BoardAPI from '../../../../../services/BoardAPI';
+import BForm from '../../../../../views/board/BoardForm';
+import BackgroundLetterAvatars from '../../../../../ui-component/BackgroundLetterAvatar';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../../../../services/baseAPI';
 
 // ==============================|| SIDEBAR BOARD LIST ||============================== //
 const boardAPI = new BoardAPI();

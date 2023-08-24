@@ -10,9 +10,9 @@ import { IconTrash } from '@tabler/icons';
 // project imports
 import swal from 'sweetalert';
 import TForm from './TaskForm';
-import TaskAPI from 'services/TaskAPI';
+import TaskAPI from '../../../services/TaskAPI';
 import io from 'socket.io-client';
-import { host } from 'services/baseAPI';
+import { host } from '../../../services/baseAPI';
 
 // ==============================|| TASK ITEM ||============================== //
 const taskAPI = new TaskAPI();

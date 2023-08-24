@@ -21,8 +21,8 @@ import * as Yup from 'yup';
 import { Formik } from 'formik';
 
 // project imports
-import AnimateButton from 'ui-component/extended/AnimateButton';
-import { strengthColor, strengthIndicator } from 'utils/password-strength';
+import AnimateButton from '../../../ui-component/extended/AnimateButton';
+import { strengthColor, strengthIndicator } from '../../../utils/password-strength';
 
 // assets
 import Visibility from '@mui/icons-material/Visibility';
@@ -30,7 +30,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 // components
 import swal from 'sweetalert';
-import UserAPI from 'services/UserAPI';
+import UserAPI from '../../../services/UserAPI';
 import bcrypt from 'bcryptjs';
 
 // ============================|| JWT - CHANGE PASSWORD ||============================ //
